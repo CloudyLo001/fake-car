@@ -2,8 +2,11 @@
  * Browser-facing map from era key to part GLB URLs. Populated from the
  * synchronized mint-assets.json registry (public/assets/mint/...). An era
  * with `parts: null` has no delivered generation yet — the fleet renders a
- * clearly-labeled placeholder proxy until the Mint pack is synced. An era
- * may temporarily omit individual parts that are still regenerating.
+ * clearly-labeled placeholder proxy until the Mint pack is synced.
+ *
+ * Every era now ships as one complete assembly, so each entry carries a lone
+ * `body`. The five-part shape (hood, doors, wheel) is still supported by the
+ * loader and the types — an era generated as a part pack drops straight in.
  */
 import { assetUrl } from "./gltf-runtime";
 
@@ -12,24 +15,6 @@ export type PartName = "body" | "hood" | "doorL" | "doorR" | "wheel";
 export interface EraParts {
   parts: Partial<Record<PartName, string>> | null;
 }
-
-const withParts = (
-  era: string,
-  overrides: Partial<Record<PartName, string>> = {},
-  artifact = "optimized_glb",
-): EraParts => {
-  const glb = (part: string) => assetUrl(`/assets/mint/${era}-${part}/${artifact}.glb`);
-  return {
-    parts: {
-      body: glb("body"),
-      hood: glb("hood"),
-      doorL: glb("door-l"),
-      doorR: glb("door-r"),
-      wheel: glb("wheel"),
-      ...overrides,
-    },
-  };
-};
 
 /** eras delivered as one complete mesh: no doors or hood to open */
 export const isSingleMesh = (era: string) => {
@@ -51,6 +36,7 @@ export const FLEET_MANIFEST: Record<string, EraParts> = {
   // delivered as ONE complete assembly (body, glass and wheels in a single
   // mesh) — nothing to fit, so it has no separate panels
   "car-2026": { parts: { body: assetUrl("/assets/mint/car-2026-body/optimized_glb.glb") } },
-  // regenerated wheel-less hover car — no wheel part by design
-  "car-2040": withParts("car-2040", { wheel: undefined }, "original_glb"),
+  // user-supplied wheel-less hover GT with neon streaks, delivered as ONE
+  // complete assembly — it floats, so it has no wheels by design
+  "car-2040": { parts: { body: assetUrl("/assets/mint/car-2040-body/optimized_glb.glb") } },
 };

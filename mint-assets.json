@@ -1785,7 +1785,7 @@
         "manifestVersion": 1,
         "kind": "asset",
         "assetType": "model",
-        "assetId": "ks7axwn3easrcd8e9me0nte5kd8cdvr2"
+        "assetId": "ks7d783ztx6x20amqechjt61818cc50v"
       },
       "transform": {
         "position": [
@@ -1806,19 +1806,25 @@
       },
       "mode": "local_files",
       "artifacts": {
-        "original_glb": {
-          "artifactId": "original_glb",
+        "optimized_glb": {
+          "artifactId": "optimized_glb",
           "role": "canonical_model",
           "format": "glb",
           "contentType": "model/gltf-binary",
-          "filename": "body-shell-kd8cdvr2-original.glb",
-          "localPath": "public/assets/mint/car-2040-body/original_glb.glb",
+          "filename": "brighter-neon-streaks-hover-818cc50v-optimized.glb",
+          "localPath": "public/assets/mint/car-2040-body/optimized_glb.glb",
           "loaderHint": "gltf",
-          "byteSize": 691712,
-          "extensionsUsed": [],
-          "extensionsRequired": [],
-          "usesDraco": false,
-          "requiresDraco": false,
+          "byteSize": 8619620,
+          "extensionsUsed": [
+            "EXT_texture_webp",
+            "KHR_draco_mesh_compression"
+          ],
+          "extensionsRequired": [
+            "EXT_texture_webp",
+            "KHR_draco_mesh_compression"
+          ],
+          "usesDraco": true,
+          "requiresDraco": true,
           "usesMeshopt": false,
           "requiresMeshopt": false,
           "usesKtx2": false,
@@ -1830,10 +1836,10 @@
           "role": "preview_image",
           "format": "webp",
           "contentType": "image/webp",
-          "filename": "body-shell-kd8cdvr2-preview.webp",
+          "filename": "brighter-neon-streaks-hover-818cc50v-preview.webp",
           "localPath": "public/assets/mint/car-2040-body/preview_image.webp",
           "loaderHint": "image",
-          "byteSize": 46912
+          "byteSize": 33062
         }
       },
       "thumbnailUrl": "public/assets/mint/car-2040-body/preview_image.webp"

@@ -125,19 +125,12 @@ export const ASSEMBLIES: Record<string, EraAssembly> = {
     parts: { body: fit([0, 0, 0]) },
     wheels: [],
   }),
-  // wheel-less hover GT: no wheel placements, floats above the mirror pool
+  // one complete assembly: a wheel-less hover GT that floats above the
+  // mirror pool, with an idle bob applied in CarFleet. This GLB is authored
+  // nose-along-X, so it takes a quarter turn to face outward like the fleet
   "car-2040": {
     ...era(4.8, {
-      parts: {
-        hood: fit([0, 0.624, 1.35], [0, 0, 0], 0.86),
-        doorL: fit([0.795, 0.585, 0.06], [0, 1.55, 0], 0.479),
-        doorR: fit([-0.863, 0.585, 0.06], [0, -1.55, 0], 0.479),
-      },
-      hinges: {
-        hood: { pivot: [0, 0.85, 0.6], axis: [1, 0, 0], angle: -0.35 },
-        doorL: { pivot: [0.795, 0.585, 0.38], axis: [0, 1, 0], angle: -1.0 },
-        doorR: { pivot: [-0.863, 0.585, 0.38], axis: [0, 1, 0], angle: 1.0 },
-      },
+      parts: { body: fit([0, 0, 0], [0, HALF_PI, 0]) },
       wheels: [],
     }),
     hover: 0.45,
