@@ -23,6 +23,12 @@ export class Turntable {
   readonly group = new THREE.Group();
   /** extra slow spin used by the finale ring reveal */
   finaleSpin = 0;
+  /**
+   * Hero intro spin. CarFleet scales this by the intro amount, so it winds
+   * back to exactly 0 as the opening shot hands off — the plate always lands
+   * square on station 0 rather than drifting off it.
+   */
+  introSpin = 0;
 
   constructor() {
     this.group.position.set(0, 0, -STATION_RADIUS);
@@ -88,6 +94,7 @@ export class Turntable {
   }
 
   setEra(eraFloat: number) {
-    this.group.rotation.y = -eraFloat * STATION_STEP + this.finaleSpin;
+    this.group.rotation.y =
+      -eraFloat * STATION_STEP + this.finaleSpin + this.introSpin;
   }
 }

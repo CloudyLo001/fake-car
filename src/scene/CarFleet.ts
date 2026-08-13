@@ -17,6 +17,9 @@ const PART_TARGET_SIZE: Record<PartName, number> = {
 /** how far the manual exploded view pushes parts along their tuned vectors */
 const EXPLODE_AMPLITUDE = 1.2;
 
+/** radians per second the plate turns during the opening aerial shot */
+const INTRO_SPIN_RATE = 0.16;
+
 interface CarAssembly {
   key: string;
   index: number;
@@ -54,9 +57,13 @@ export class CarFleet {
   private loader = createMintGltfLoader();
   private turntable: Turntable;
   private finaleLights: THREE.SpotLight[] = [];
-  private mode: "scroll" | "compare" | "finale" = "scroll";
+  // "reveal" is the aerial ring framing, used by both the hero intro and the
+  // closing lineage shot: no car is centered, so none takes drag or doors.
+  private mode: "scroll" | "compare" | "reveal" = "scroll";
   private compareKeys: [string, string] | null = null;
-  private finaleT = 0;
+  private revealT = 0;
+  private introT = 0;
+  private introSpinAngle = 0;
   private elapsed = 0;
   private reduced: boolean;
   yaw = 0;
@@ -411,9 +418,15 @@ export class CarFleet {
     }
   }
 
-  setFinale(t: number) {
-    this.finaleT = t;
-    this.mode = t > 0 ? "finale" : this.compareKeys ? "compare" : "scroll";
+  /** aerial ring framing amount, shared by the hero intro and the finale */
+  setReveal(t: number) {
+    this.revealT = t;
+    this.mode = t > 0 ? "reveal" : this.compareKeys ? "compare" : "scroll";
+  }
+
+  /** hero-only: how much of the opening plate spin is still applied */
+  setIntro(t: number) {
+    this.introT = t;
   }
 
   setPaint(hex: string) {
@@ -440,9 +453,19 @@ export class CarFleet {
   /** drive per-frame animation. eraFloat comes from the scroll timeline. */
   update(dt: number, eraFloat: number) {
     this.elapsed += dt;
+    if (this.introT > 0) {
+      // The opening shot turns the plate; scaling the accumulated angle by
+      // introT unwinds it to exactly 0 as the intro ends, so era 0 lands on
+      // station rather than wherever the spin happened to stop.
+      this.introSpinAngle += dt * INTRO_SPIN_RATE;
+      this.turntable.introSpin = this.introSpinAngle * this.introT;
+    } else if (this.introSpinAngle !== 0) {
+      this.introSpinAngle = 0;
+      this.turntable.introSpin = 0;
+    }
     this.turntable.setEra(this.mode === "compare" ? Math.round(eraFloat) : eraFloat);
-    if (this.mode === "finale") {
-      this.turntable.finaleSpin += dt * 0.05 * this.finaleT;
+    if (this.mode === "reveal" && this.introT <= 0) {
+      this.turntable.finaleSpin += dt * 0.05 * this.revealT;
     }
 
     this.assemblies.forEach((a) => {
@@ -499,7 +522,7 @@ export class CarFleet {
     });
 
     this.finaleLights.forEach((l) => {
-      l.intensity = this.mode === "finale" ? this.finaleT * 300 : 0;
+      l.intensity = this.mode === "reveal" ? this.revealT * 300 : 0;
     });
 
     this.yaw += this.yawVelocity * dt;

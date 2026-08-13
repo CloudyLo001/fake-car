@@ -30,13 +30,16 @@ export function wireInteractions(stage: Stage, fleet: CarFleet, timeline: Scroll
     }
     stage.eraFloat = compareOpen ? stage.eraFloat : s.eraFloat;
     stage.handoffT = s.handoffT;
-    fleet.setFinale(s.finaleT);
+    fleet.setReveal(s.revealT);
+    fleet.setIntro(s.introT);
 
-    // finale: the aerial ring reveal — the one big camera move.
-    // Pull up and back until the whole plate (center at z = -6) is in frame.
+    // The aerial ring reveal — the one big camera move, used at both ends of
+    // the page: the hero opens on it and scrolls down onto the first car, and
+    // the finale rises back to it. Pull up and back until the whole plate
+    // (center at z = -6) is in frame.
     if (!compareOpen) {
-      const t = s.finaleT;
-      stage.finaleT = t;
+      const t = s.revealT;
+      stage.revealT = t;
       stage.camOffset.set(t * -1.2, t * 13.5, t * 7.5);
       stage.targetOffset.set(0, t * -0.55, t * -6.0);
     }

@@ -25,8 +25,11 @@ export class Stage {
   eraFloat = 0;
   /** 0..1 within the current handoff zone */
   handoffT = 0;
-  /** 0..1 during the aerial ring reveal — lifts ambient so the whole plate reads */
-  finaleT = 0;
+  /**
+   * 0..1 aerial ring reveal — lifts ambient so the whole plate reads. Driven
+   * by both the hero intro and the closing lineage shot.
+   */
+  revealT = 0;
 
   private composer: EffectComposer;
   private bloom: UnrealBloomPass;
@@ -103,12 +106,12 @@ export class Stage {
       const elapsed = this.clock.elapsedTime;
 
       const g = sampleGrade(this.eraFloat);
-      g.ambient += this.finaleT * 0.22;
-      g.fogDensity *= 1 - this.finaleT * 0.8;
+      g.ambient += this.revealT * 0.22;
+      g.fogDensity *= 1 - this.revealT * 0.8;
       this.studio.applyGrade(g);
       this.fog.color.copy(g.fog);
       this.fog.density = g.fogDensity;
-      this.scene.environmentIntensity = g.envIntensity + this.finaleT * 0.25;
+      this.scene.environmentIntensity = g.envIntensity + this.revealT * 0.25;
       this.bloom.strength = g.bloom;
       const u = this.grade.uniforms as Record<string, THREE.IUniform>;
       (u.tint.value as THREE.Color).copy(g.tint);

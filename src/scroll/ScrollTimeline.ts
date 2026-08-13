@@ -10,17 +10,29 @@ import { ERAS } from "../brand/brand";
  */
 const HOLD_END = 0.58;
 
+/**
+ * Fraction of the hero's scroll span over which the opening aerial shot
+ * settles into the first car's framing. Ends before the hero does, so the
+ * 1948 chapter arrives with the camera already at rest.
+ */
+const INTRO_END = 0.8;
+
 export interface TimelineState {
   eraFloat: number;
   handoffT: number;
   activeIndex: number; // -1 hero, 0..5 eras, 6 finale
   heroT: number;
   finaleT: number;
+  /** 1 = opening aerial shot, 0 = settled on the first car */
+  introT: number;
+  /** aerial ring framing amount — the intro and the finale share it */
+  revealT: number;
 }
 
 export class ScrollTimeline {
   readonly state: TimelineState = {
     eraFloat: 0, handoffT: 0, activeIndex: -1, heroT: 0, finaleT: 0,
+    introT: 1, revealT: 1,
   };
   private hero!: HTMLElement;
   private chapters: HTMLElement[] = [];
@@ -48,6 +60,16 @@ export class ScrollTimeline {
 
   onChange(fn: (s: TimelineState) => void) {
     this.listeners.add(fn);
+  }
+
+  /**
+   * Push current state to every listener, synchronously. `attach()` measures
+   * before anything subscribes, so boot must call this once everything is
+   * wired — otherwise listeners sit on stale defaults until the first scroll,
+   * which left the opening aerial shot unapplied on a fresh load at the top.
+   */
+  refresh() {
+    this.measure();
   }
 
   /** scroll so a given era chapter's hold zone is active */
@@ -147,6 +169,12 @@ export class ScrollTimeline {
       eraFloat = Math.round(eraFloat);
       handoffT = 0;
     }
+
+    // The page opens on the aerial ring — the whole plate, all six cars —
+    // and scrolling the hero away lowers the camera onto the first car.
+    // Reduced motion skips the move and starts settled.
+    s.introT = this.reduced ? 0 : 1 - this.ease(Math.min(1, s.heroT / INTRO_END));
+    s.revealT = Math.max(s.introT, s.finaleT);
 
     s.eraFloat = eraFloat;
     s.handoffT = handoffT;

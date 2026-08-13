@@ -48,11 +48,14 @@ async function boot() {
   }
 
   wireInteractions(stage, fleet, timeline);
+  // every listener is wired now — push current scroll state so the opening
+  // aerial framing is in place on the very first rendered frame
+  timeline.refresh();
   void loadProps(dioramas);
 
   stage.onUpdate((dt, elapsed) => {
     fleet.update(dt, stage.eraFloat);
-    weather.update(dt, elapsed, stage.eraFloat, timeline.state.finaleT);
+    weather.update(dt, elapsed, stage.eraFloat, timeline.state.revealT);
   });
 
   stage.start();
