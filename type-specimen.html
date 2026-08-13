@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Solvane — type specimen</title>
+
+    <!--
+      DEV-ONLY specimen. Fonts load from the Google Fonts and Fontshare CDNs
+      here purely so this page is quick to iterate on; the real page will
+      self-host subset woff2 so it makes no external requests.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Sorts+Mill+Goudy:ital@0;1&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Libre+Caslon+Text:ital@0;1&family=Michroma&family=IBM+Plex+Mono:wght@300;400;500&family=Source+Sans+3:ital,wght@0,300..700;1,300..700&family=Martian+Mono:wght@300;400;500&family=Abril+Fatface&family=Playfair+Display:ital,wght@0,500..900;1,500..900&display=swap"
+      rel="stylesheet"
+    />
+    <!--
+      One request per family: the Fontshare API silently honours only the
+      FIRST f[] param, so a combined URL returns just one typeface.
+    -->
+    <link href="https://api.fontshare.com/v2/css?f[]=zodiak@300,400,700&display=swap" rel="stylesheet" />
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet" />
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@200,300,400,500&display=swap" rel="stylesheet" />
+    <link href="https://api.fontshare.com/v2/css?f[]=general-sans@300,400,500&display=swap" rel="stylesheet" />
+    <link href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,700&display=swap" rel="stylesheet" />
+
+    <style>
+      :root {
+        --paper: #0e0f12;
+        --ink: #f4f1ea;
+        --dim: rgba(244, 241, 234, 0.62);
+        --rule: rgba(244, 241, 234, 0.16);
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: "IBM Plex Mono", monospace;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* ---- page chrome ---- */
+      .bar {
+        position: sticky; top: 0; z-index: 10;
+        display: flex; flex-wrap: wrap; gap: 14px; align-items: center;
+        padding: 12px 22px;
+        background: rgba(14, 15, 18, 0.94);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--rule);
+        font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+      }
+      .bar strong { font-weight: 500; }
+      .bar button {
+        font: inherit; text-transform: inherit; letter-spacing: inherit;
+        color: var(--ink); background: transparent;
+        border: 1px solid var(--rule); border-radius: 2px;
+        padding: 5px 11px; cursor: pointer;
+      }
+      .bar button.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+      .bar .sep { width: 1px; height: 20px; background: var(--rule); }
+
+      /* ---- specimen slabs ---- */
+      .slab { padding: 74px 6vw 84px; border-bottom: 1px solid var(--rule); }
+      .slab__tag {
+        font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
+        color: var(--dim); margin: 0 0 26px;
+      }
+      .grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr); gap: 46px; align-items: start; }
+      @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+      .kicker { font-size: 11px; letter-spacing: 0.26em; text-transform: uppercase; margin: 0 0 16px; color: var(--dim); }
+      .headline { font-size: clamp(40px, 5.6vw, 84px); line-height: 0.98; margin: 0 0 18px; }
+      .deck { font-size: clamp(15px, 1.15vw, 18px); line-height: 1.55; margin: 0 0 26px; max-width: 46ch; color: rgba(244,241,234,0.86); }
+      .specs { list-style: none; padding: 0; margin: 0; display: flex; gap: 34px; flex-wrap: wrap; }
+      .specs li { display: flex; flex-direction: column; gap: 5px; }
+      .specs .label { font-family: "IBM Plex Mono", monospace; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); }
+      .specs .value { font-size: 15px; font-weight: 600; }
+
+      .adcard { padding: 26px 26px 22px; border-radius: 3px; }
+      .adcard h3 { font-size: 21px; line-height: 1.25; margin: 0 0 10px; }
+      .adcard p { font-size: 13px; line-height: 1.6; margin: 0 0 10px; }
+      .adcard .footnote { font-size: 11px; margin: 0; opacity: 0.75; }
+
+      .note { font-size: 11px; line-height: 1.7; color: var(--dim); margin: 26px 0 0; max-width: 70ch; }
+      .note b { color: var(--ink); font-weight: 500; }
+
+      /* =====================================================
+         THE SLATE — one block per era. Alternates are toggled
+         by the buttons up top via [data-alt] on <html>.
+         ===================================================== */
+
+      /* hero — Zodiak */
+      .s-hero { background: radial-gradient(circle at 50% 40%, #191b20 0%, #0b0c0e 70%); text-align: center; }
+      .s-hero .headline { font-family: "Zodiak", serif; font-weight: 400; font-size: clamp(46px, 7.4vw, 112px); letter-spacing: -0.015em; }
+      .s-hero .deck { font-family: "Zodiak", serif; font-weight: 300; margin-inline: auto; }
+      .s-hero .kicker { font-family: "IBM Plex Mono", monospace; }
+      .s-hero .wordmark { font-family: "Zodiak", serif; font-weight: 700; letter-spacing: 0.42em; font-size: 15px; margin: 0 0 30px; }
+      html[data-alt-hero="switzer"] .s-hero .headline,
+      html[data-alt-hero="switzer"] .s-hero .deck,
+      html[data-alt-hero="switzer"] .s-hero .wordmark { font-family: "Switzer", sans-serif; }
+
+      /* 1948 — Cinzel + Sorts Mill Goudy */
+      .s-1948 { background: #100f0d; }
+      .s-1948 .headline { font-family: "Cinzel", serif; font-weight: 500; font-size: clamp(34px, 4.4vw, 66px); letter-spacing: 0.03em; }
+      .s-1948 .deck, .s-1948 .specs .value { font-family: "Sorts Mill Goudy", serif; }
+      .s-1948 .deck { font-style: italic; }
+      .s-1948 .adcard { background: #efe7d4; color: #241f18; }
+      .s-1948 .adcard h3 { font-family: "Cinzel", serif; font-weight: 600; font-size: 18px; letter-spacing: 0.04em; }
+      .s-1948 .adcard p { font-family: "Sorts Mill Goudy", serif; font-size: 14px; text-align: justify; }
+      .s-1948 .adcard .footnote { font-family: "Cinzel", serif; letter-spacing: 0.16em; text-align: center; }
+      html[data-alt-1948="fatface"] .s-1948 .headline { font-family: "Abril Fatface", serif; font-weight: 400; letter-spacing: 0; }
+
+      /* 1965 — Bodoni Moda + Libre Caslon Text */
+      .s-1965 { background: #12100c; }
+      .s-1965 .headline { font-family: "Bodoni Moda", serif; font-weight: 700; font-style: italic; letter-spacing: -0.01em; }
+      .s-1965 .deck, .s-1965 .specs .value { font-family: "Libre Caslon Text", serif; }
+      .s-1965 .kicker { color: #d9a441; }
+      .s-1965 .adcard { background: #fdf6e8; color: #232019; transform: rotate(-1.1deg); box-shadow: 0 18px 42px rgba(0,0,0,0.45); }
+      .s-1965 .adcard h3 { font-family: "Bodoni Moda", serif; font-style: italic; font-weight: 700; font-size: 23px; }
+      .s-1965 .adcard p { font-family: "Libre Caslon Text", serif; }
+      .s-1965 .adcard .footnote { font-family: "Libre Caslon Text", serif; color: #a33b25; font-weight: 700; }
+      html[data-alt-1965="playfair"] .s-1965 .headline,
+      html[data-alt-1965="playfair"] .s-1965 .adcard h3 { font-family: "Playfair Display", serif; }
+
+      /* 1987 — Michroma + IBM Plex Mono */
+      .s-1987 { background: #07090f; }
+      .s-1987 .headline { font-family: "Michroma", sans-serif; font-weight: 400; font-size: clamp(24px, 3.1vw, 52px); letter-spacing: 0.01em; text-transform: uppercase; }
+      .s-1987 .deck { font-family: "IBM Plex Mono", monospace; font-size: 13px; line-height: 1.85; }
+      .s-1987 .specs .value { font-family: "IBM Plex Mono", monospace; color: #6ee7ff; }
+      .s-1987 .kicker { color: #6ee7ff; }
+      .s-1987 .adcard { background: #0d1420; color: #cfe9f5; border: 1px solid rgba(110,231,255,0.3); }
+      .s-1987 .adcard h3 { font-family: "Michroma", sans-serif; font-size: 15px; color: #6ee7ff; letter-spacing: 0.02em; }
+      .s-1987 .adcard p { font-family: "IBM Plex Mono", monospace; font-size: 12px; }
+      .s-1987 .adcard .footnote { font-family: "IBM Plex Mono", monospace; }
+
+      /* 2004 — Source Sans 3 */
+      .s-2004 { background: #0d0f11; }
+      .s-2004 .headline { font-family: "Source Sans 3", sans-serif; font-weight: 700; letter-spacing: -0.025em; }
+      .s-2004 .deck, .s-2004 .specs .value { font-family: "Source Sans 3", sans-serif; }
+      .s-2004 .adcard { background: #f2f4f6; color: #1c2126; }
+      .s-2004 .adcard h3, .s-2004 .adcard p, .s-2004 .adcard .footnote { font-family: "Source Sans 3", sans-serif; }
+
+      /* 2026 — Satoshi */
+      .s-2026 { background: #e9ebee; color: #14171a; }
+      .s-2026 .kicker, .s-2026 .specs .label { color: rgba(20,23,26,0.55); }
+      .s-2026 .headline { font-family: "Satoshi", sans-serif; font-weight: 500; letter-spacing: -0.035em; }
+      .s-2026 .deck { font-family: "Satoshi", sans-serif; font-weight: 400; color: rgba(20,23,26,0.78); }
+      .s-2026 .specs .value { font-family: "Satoshi", sans-serif; }
+      .s-2026 .adcard { background: #fff; color: #14171a; box-shadow: 0 12px 34px rgba(0,0,0,0.10); }
+      .s-2026 .adcard h3, .s-2026 .adcard p, .s-2026 .adcard .footnote { font-family: "Satoshi", sans-serif; }
+      html[data-alt-2026="general"] .s-2026 .headline,
+      html[data-alt-2026="general"] .s-2026 .deck,
+      html[data-alt-2026="general"] .s-2026 .specs .value,
+      html[data-alt-2026="general"] .s-2026 .adcard h3,
+      html[data-alt-2026="general"] .s-2026 .adcard p { font-family: "General Sans", sans-serif; }
+
+      /* 2040 — Clash Display + Martian Mono */
+      .s-2040 { background: #05100f; }
+      .s-2040 .headline { font-family: "Clash Display", sans-serif; font-weight: 300; letter-spacing: 0.02em; }
+      .s-2040 .deck { font-family: "Martian Mono", monospace; font-weight: 300; font-size: 12px; line-height: 1.95; letter-spacing: 0.01em; }
+      .s-2040 .specs .value { font-family: "Martian Mono", monospace; font-weight: 400; font-size: 13px; color: #5de0c8; }
+      .s-2040 .kicker { color: #5de0c8; }
+      .s-2040 .adcard { background: rgba(93,224,200,0.07); color: #d6fff6; border: 1px solid rgba(93,224,200,0.28); }
+      .s-2040 .adcard h3 { font-family: "Clash Display", sans-serif; font-weight: 400; font-size: 20px; }
+      .s-2040 .adcard p, .s-2040 .adcard .footnote { font-family: "Martian Mono", monospace; font-size: 11px; line-height: 1.9; }
+    </style>
+  </head>
+  <body>
+    <div class="bar">
+      <strong>Type specimen</strong>
+      <span class="sep"></span>
+      <span>Hero</span>
+      <button data-k="hero" data-v="" class="on">Zodiak</button>
+      <button data-k="hero" data-v="switzer">Switzer</button>
+      <span class="sep"></span>
+      <span>1948</span>
+      <button data-k="1948" data-v="" class="on">Cinzel</button>
+      <button data-k="1948" data-v="fatface">Abril Fatface</button>
+      <span class="sep"></span>
+      <span>1965</span>
+      <button data-k="1965" data-v="" class="on">Bodoni Moda</button>
+      <button data-k="1965" data-v="playfair">Playfair</button>
+      <span class="sep"></span>
+      <span>2026</span>
+      <button data-k="2026" data-v="" class="on">Satoshi</button>
+      <button data-k="2026" data-v="general">General Sans</button>
+    </div>
+
+    <div id="out"></div>
+
+    <script type="module">
+      import { BRAND, ERAS } from "/src/brand/brand.ts";
+
+      const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+
+      const heroHtml = () => `
+        <section class="slab s-hero">
+          <p class="slab__tag">Hero · house face</p>
+          <p class="wordmark">${esc(BRAND.name.toUpperCase())}</p>
+          <p class="kicker">${esc(BRAND.name)} · est. ${BRAND.founded} · ${esc(BRAND.town)}</p>
+          <h1 class="headline">${esc(BRAND.heroTagline)}</h1>
+          <p class="deck">${esc(BRAND.heroSub)}</p>
+        </section>`;
+
+      // key, not year: the last era's year is "2040s"
+      const eraHtml = (e) => `
+        <section class="slab s-${e.key.replace("car-", "")}">
+          <p class="slab__tag">${esc(e.year)} · ${esc(e.key)}</p>
+          <div class="grid">
+            <div>
+              <p class="kicker">Chapter ${esc(e.chapter)} — ${esc(e.year)}</p>
+              <h2 class="headline">${esc(e.model)}</h2>
+              <p class="deck">${esc(e.positioning)}</p>
+              <ul class="specs">
+                ${e.specs.map((s) => `<li><span class="label">${esc(s.label)}</span><span class="value">${esc(s.value)}</span></li>`).join("")}
+              </ul>
+            </div>
+            <aside class="adcard">
+              <h3>${esc(e.adHeadline)}</h3>
+              <p>${esc(e.adBody)}</p>
+              ${e.adFootnote ? `<p class="footnote">${esc(e.adFootnote)}</p>` : ""}
+            </aside>
+          </div>
+        </section>`;
+
+      document.getElementById("out").innerHTML =
+        heroHtml() + ERAS.map(eraHtml).join("");
+
+      document.querySelectorAll(".bar button").forEach((b) => {
+        b.addEventListener("click", () => {
+          const { k, v } = b.dataset;
+          document.documentElement.setAttribute(`data-alt-${k}`, v);
+          document.querySelectorAll(`.bar button[data-k="${k}"]`).forEach((o) => o.classList.toggle("on", o === b));
+        });
+      });
+    </script>
+  </body>
+</html>
