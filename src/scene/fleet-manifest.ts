@@ -36,8 +36,12 @@ export const isSingleMesh = (era: string) => {
 };
 
 export const FLEET_MANIFEST: Record<string, EraParts> = {
-  "car-1948": withParts("car-1948"),
-  "car-1965": withParts("car-1965"),
+  // user-supplied brass-era touring car, delivered as ONE complete assembly
+  // (body, top, brass lamps and spoke wheels in a single mesh)
+  "car-1948": { parts: { body: "/assets/mint/car-1948-body/optimized_glb.glb" } },
+  // user-supplied candy-red porthole convertible, delivered as ONE complete
+  // assembly (body, chrome and wheels in a single mesh) — no panels to fit
+  "car-1965": { parts: { body: "/assets/mint/car-1965-body/original_glb.glb" } },
   // delivered as ONE complete assembly — no panels to fit
   "car-1987": { parts: { body: "/assets/mint/car-1987-body/optimized_glb.glb" } },
   // delivered as ONE complete assembly — no panels to fit

@@ -4,9 +4,9 @@ import type { PartName } from "./fleet-manifest";
 /**
  * Per-era assembly tuning: how the five delivered pack parts compose into
  * one car. Values are hand-tuned per generation against the delivered
- * geometry (see .debug-shots workflow); `DEFAULT_ASSEMBLY` carries the
- * tuned 1948 fit, which all packs start from since they share the same
- * generation style.
+ * geometry (see .debug-shots workflow); `DEFAULT_ASSEMBLY` is the baseline
+ * part-pack fit every era starts from. Eras delivered as one complete mesh
+ * override it with a bare `body` fit and no wheels.
  *
  * Conventions:
  *  - car group faces +Z (nose toward +Z); left side of the car is +X
@@ -96,18 +96,17 @@ const era = (
 
 /** era-specific overrides, tuned per delivered pack via the debug-shot loop */
 export const ASSEMBLIES: Record<string, EraAssembly> = {
-  "car-1948": DEFAULT_ASSEMBLY,
-  "car-1965": era(4.5, {
-    parts: {
-      hood: fit([0, 0.67, 1.3], [-HALF_PI + 0.7, 0, 0], 0.9),
-      doorL: fit([0.818, 0.605, 0.06], [0, 1.55, 0], 0.509),
-      doorR: fit([-0.519, 0.605, 0.06], [0, -1.55, 0], 0.561),
-    },
-    hinges: {
-      hood: { pivot: [0, 0.98, 0.55], axis: [1, 0, 0], angle: -0.5 },
-      doorL: { pivot: [0.818, 0.605, 0.38], axis: [0, 1, 0], angle: -1.0 },
-      doorR: { pivot: [-0.519, 0.605, 0.38], axis: [0, 1, 0], angle: 1.0 },
-    },
+  // one complete assembly: a brass-era touring car — short and tall, so it
+  // rides the shortest length in the fleet to keep its real proportions
+  "car-1948": era(3.7, {
+    parts: { body: fit([0, 0, 0]) },
+    wheels: [],
+  }),
+  // one complete assembly: a full-size American convertible, so it rides a
+  // little longer than the rest of the fleet
+  "car-1965": era(4.9, {
+    parts: { body: fit([0, 0, 0]) },
+    wheels: [],
   }),
   // one complete assembly: body, glass and wheels arrive as a single mesh
   "car-1987": era(4.6, {

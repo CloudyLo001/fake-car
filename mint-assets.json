@@ -11,7 +11,7 @@
         "manifestVersion": 1,
         "kind": "asset",
         "assetType": "model",
-        "assetId": "ks789a2chd1cqsgrsr3nkezy9s8cah73"
+        "assetId": "ks7dh58hde0ay9a3c49246b2en8cc1tg"
       },
       "transform": {
         "position": [
@@ -37,10 +37,10 @@
           "role": "canonical_model",
           "format": "glb",
           "contentType": "model/gltf-binary",
-          "filename": "body-shell-9s8cah73-optimized.glb",
+          "filename": "black-brass-touring-car-en8cc1tg-optimized.glb",
           "localPath": "public/assets/mint/car-1948-body/optimized_glb.glb",
           "loaderHint": "gltf",
-          "byteSize": 708652,
+          "byteSize": 9068944,
           "extensionsUsed": [
             "EXT_texture_webp",
             "KHR_draco_mesh_compression"
@@ -57,34 +57,15 @@
           "requiresKtx2": false,
           "unknownRequiredExtensions": []
         },
-        "original_glb": {
-          "artifactId": "original_glb",
-          "role": "source_model",
-          "format": "glb",
-          "contentType": "model/gltf-binary",
-          "filename": "body-shell-9s8cah73-original.glb",
-          "localPath": "public/assets/mint/car-1948-body/original_glb.glb",
-          "loaderHint": "gltf",
-          "byteSize": 906756,
-          "extensionsUsed": [],
-          "extensionsRequired": [],
-          "usesDraco": false,
-          "requiresDraco": false,
-          "usesMeshopt": false,
-          "requiresMeshopt": false,
-          "usesKtx2": false,
-          "requiresKtx2": false,
-          "unknownRequiredExtensions": []
-        },
         "preview_image": {
           "artifactId": "preview_image",
           "role": "preview_image",
           "format": "webp",
           "contentType": "image/webp",
-          "filename": "body-shell-9s8cah73-preview.webp",
+          "filename": "black-brass-touring-car-en8cc1tg-preview.webp",
           "localPath": "public/assets/mint/car-1948-body/preview_image.webp",
           "loaderHint": "image",
-          "byteSize": 54222
+          "byteSize": 48116
         }
       },
       "thumbnailUrl": "public/assets/mint/car-1948-body/preview_image.webp"
@@ -426,7 +407,7 @@
         "manifestVersion": 1,
         "kind": "asset",
         "assetType": "model",
-        "assetId": "ks7f3tyyym2bqyz858a7b3bnfx8cb1qm"
+        "assetId": "ks74sfq9dnzbkrpckcw92z3bqx8ccmef"
       },
       "transform": {
         "position": [
@@ -447,40 +428,15 @@
       },
       "mode": "local_files",
       "artifacts": {
-        "optimized_glb": {
-          "artifactId": "optimized_glb",
+        "original_glb": {
+          "artifactId": "original_glb",
           "role": "canonical_model",
           "format": "glb",
           "contentType": "model/gltf-binary",
-          "filename": "body-shell-fx8cb1qm-optimized.glb",
-          "localPath": "public/assets/mint/car-1965-body/optimized_glb.glb",
-          "loaderHint": "gltf",
-          "byteSize": 685436,
-          "extensionsUsed": [
-            "EXT_texture_webp",
-            "KHR_draco_mesh_compression"
-          ],
-          "extensionsRequired": [
-            "EXT_texture_webp",
-            "KHR_draco_mesh_compression"
-          ],
-          "usesDraco": true,
-          "requiresDraco": true,
-          "usesMeshopt": false,
-          "requiresMeshopt": false,
-          "usesKtx2": false,
-          "requiresKtx2": false,
-          "unknownRequiredExtensions": []
-        },
-        "original_glb": {
-          "artifactId": "original_glb",
-          "role": "source_model",
-          "format": "glb",
-          "contentType": "model/gltf-binary",
-          "filename": "body-shell-fx8cb1qm-original.glb",
+          "filename": "candy-red-porthole-convertible-qx8ccmef-original.glb",
           "localPath": "public/assets/mint/car-1965-body/original_glb.glb",
           "loaderHint": "gltf",
-          "byteSize": 891724,
+          "byteSize": 1113472,
           "extensionsUsed": [],
           "extensionsRequired": [],
           "usesDraco": false,
@@ -496,10 +452,10 @@
           "role": "preview_image",
           "format": "webp",
           "contentType": "image/webp",
-          "filename": "body-shell-fx8cb1qm-preview.webp",
+          "filename": "candy-red-porthole-convertible-qx8ccmef-preview.webp",
           "localPath": "public/assets/mint/car-1965-body/preview_image.webp",
           "loaderHint": "image",
-          "byteSize": 49782
+          "byteSize": 46940
         }
       },
       "thumbnailUrl": "public/assets/mint/car-1965-body/preview_image.webp"

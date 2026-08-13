@@ -68,7 +68,7 @@ export const ERAS: Era[] = [
       { label: "Output", value: "52 hp" },
       { label: "Top speed", value: "118 km/h" },
     ],
-    paint: "#e8e0cc",
+    paint: "#1a1c22",
     accent: "#b8965a",
   },
   {
@@ -89,7 +89,7 @@ export const ERAS: Era[] = [
       { label: "Output", value: "130 hp" },
       { label: "Top speed", value: "185 km/h" },
     ],
-    paint: "#1f6f74",
+    paint: "#b3121c",
     accent: "#d9a441",
   },
   {
