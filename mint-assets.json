@@ -841,7 +841,7 @@
         "manifestVersion": 1,
         "kind": "asset",
         "assetType": "model",
-        "assetId": "ks792f6jxgfq43vjfxkhy8s9j98cd0ht"
+        "assetId": "ks7e3fzj5zgh57tcsfvmd8dvfs8cd0rc"
       },
       "transform": {
         "position": [
@@ -862,19 +862,25 @@
       },
       "mode": "local_files",
       "artifacts": {
-        "original_glb": {
-          "artifactId": "original_glb",
+        "optimized_glb": {
+          "artifactId": "optimized_glb",
           "role": "canonical_model",
           "format": "glb",
           "contentType": "model/gltf-binary",
-          "filename": "body-shell-j98cd0ht-original.glb",
-          "localPath": "public/assets/mint/car-1987-body/original_glb.glb",
+          "filename": "full-assembly-fs8cd0rc-optimized.glb",
+          "localPath": "public/assets/mint/car-1987-body/optimized_glb.glb",
           "loaderHint": "gltf",
-          "byteSize": 888904,
-          "extensionsUsed": [],
-          "extensionsRequired": [],
-          "usesDraco": false,
-          "requiresDraco": false,
+          "byteSize": 8794060,
+          "extensionsUsed": [
+            "EXT_texture_webp",
+            "KHR_draco_mesh_compression"
+          ],
+          "extensionsRequired": [
+            "EXT_texture_webp",
+            "KHR_draco_mesh_compression"
+          ],
+          "usesDraco": true,
+          "requiresDraco": true,
           "usesMeshopt": false,
           "requiresMeshopt": false,
           "usesKtx2": false,
@@ -886,10 +892,10 @@
           "role": "preview_image",
           "format": "webp",
           "contentType": "image/webp",
-          "filename": "body-shell-j98cd0ht-preview.webp",
+          "filename": "full-assembly-fs8cd0rc-preview.webp",
           "localPath": "public/assets/mint/car-1987-body/preview_image.webp",
           "loaderHint": "image",
-          "byteSize": 54694
+          "byteSize": 48802
         }
       },
       "thumbnailUrl": "public/assets/mint/car-1987-body/preview_image.webp"
@@ -1131,7 +1137,7 @@
         "manifestVersion": 1,
         "kind": "asset",
         "assetType": "model",
-        "assetId": "ks73j7v4e1dzs2nm0qe7535c8s8cd50z"
+        "assetId": "ks741hrp866gq8qprq94eeh98s8cc5rh"
       },
       "transform": {
         "position": [
@@ -1152,19 +1158,25 @@
       },
       "mode": "local_files",
       "artifacts": {
-        "original_glb": {
-          "artifactId": "original_glb",
+        "optimized_glb": {
+          "artifactId": "optimized_glb",
           "role": "canonical_model",
           "format": "glb",
           "contentType": "model/gltf-binary",
-          "filename": "body-shell-8s8cd50z-original.glb",
-          "localPath": "public/assets/mint/car-2004-body/original_glb.glb",
+          "filename": "silver-swept-sedan-8s8cc5rh-optimized.glb",
+          "localPath": "public/assets/mint/car-2004-body/optimized_glb.glb",
           "loaderHint": "gltf",
-          "byteSize": 931620,
-          "extensionsUsed": [],
-          "extensionsRequired": [],
-          "usesDraco": false,
-          "requiresDraco": false,
+          "byteSize": 1160856,
+          "extensionsUsed": [
+            "EXT_texture_webp",
+            "KHR_draco_mesh_compression"
+          ],
+          "extensionsRequired": [
+            "EXT_texture_webp",
+            "KHR_draco_mesh_compression"
+          ],
+          "usesDraco": true,
+          "requiresDraco": true,
           "usesMeshopt": false,
           "requiresMeshopt": false,
           "usesKtx2": false,
@@ -1176,10 +1188,10 @@
           "role": "preview_image",
           "format": "webp",
           "contentType": "image/webp",
-          "filename": "body-shell-8s8cd50z-preview.webp",
+          "filename": "silver-swept-sedan-8s8cc5rh-preview.webp",
           "localPath": "public/assets/mint/car-2004-body/preview_image.webp",
           "loaderHint": "image",
-          "byteSize": 58142
+          "byteSize": 36932
         }
       },
       "thumbnailUrl": "public/assets/mint/car-2004-body/preview_image.webp"

@@ -109,30 +109,16 @@ export const ASSEMBLIES: Record<string, EraAssembly> = {
       doorR: { pivot: [-0.519, 0.605, 0.38], axis: [0, 1, 0], angle: 1.0 },
     },
   }),
-  "car-1987": era(4.35, {
-    parts: {
-      hood: fit([0, 0.48, 1.35], [0, 0, 0], 0.85),
-      doorL: fit([0.511, 0.745, 0], [0, 1.55, 0], 0.732),
-      doorR: fit([-0.732, 0.745, 0], [0, -1.55, 0], 0.739),
-    },
-    hinges: {
-      hood: { pivot: [0, 0.88, 0.6], axis: [1, 0, 0], angle: -0.5 },
-      doorL: { pivot: [0.511, 0.745, 0.46], axis: [0, 1, 0], angle: -1.0 },
-      doorR: { pivot: [-0.732, 0.745, 0.46], axis: [0, 1, 0], angle: 1.0 },
-    },
+  // one complete assembly: body, glass and wheels arrive as a single mesh
+  "car-1987": era(4.6, {
+    parts: { body: fit([0, 0, 0]) },
+    wheels: [],
   }),
+  // one complete assembly; this GLB is authored nose-along-X, so give it a
+  // quarter turn to face outward (+Z) like the rest of the fleet
   "car-2004": era(4.55, {
-    parts: {
-      // flattest orientation is identity here, not the rotated one
-      hood: fit([0, 0.57, 1.14], [0, 0, 0], 1.05),
-      doorL: fit([0.468, 0.725, 0.38], [0, 1.55, 0], 0.719),
-      doorR: fit([-0.45, 0.725, 0.38], [0, -1.55, 0], 0.682),
-    },
-    hinges: {
-      hood: { pivot: [0, 0.88, 0.6], axis: [1, 0, 0], angle: -0.5 },
-      doorL: { pivot: [0.468, 0.725, 0.82], axis: [0, 1, 0], angle: -1.0 },
-      doorR: { pivot: [-0.45, 0.725, 0.82], axis: [0, 1, 0], angle: 1.0 },
-    },
+    parts: { body: fit([0, 0, 0], [0, HALF_PI, 0]) },
+    wheels: [],
   }),
   // one complete assembly: body, glass and wheels arrive as a single mesh, so
   // there are no panels to place and no wheels to position
