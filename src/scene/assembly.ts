@@ -1,0 +1,162 @@
+import * as THREE from "three";
+import type { PartName } from "./fleet-manifest";
+
+/**
+ * Per-era assembly tuning: how the five delivered pack parts compose into
+ * one car. Values are hand-tuned per generation against the delivered
+ * geometry (see .debug-shots workflow); `DEFAULT_ASSEMBLY` carries the
+ * tuned 1948 fit, which all packs start from since they share the same
+ * generation style.
+ *
+ * Conventions:
+ *  - car group faces +Z (nose toward +Z); left side of the car is +X
+ *  - car root sits on the plinth top (y = 0.12 handled by CarFleet)
+ *  - every part transform is local to the car group
+ *  - doors hinge around Y at their front edge; the hood tilts around X at
+ *    its cowl edge (front lifts up, alligator style)
+ */
+export interface PartFit {
+  position: [number, number, number];
+  rotation: [number, number, number];
+  /** multiplier on the part's normalized target size */
+  scale: number;
+}
+
+export interface HingeFit {
+  /** hinge pivot in car-group space */
+  pivot: [number, number, number];
+  axis: [number, number, number];
+  /** open angle in radians */
+  angle: number;
+}
+
+export interface EraAssembly {
+  /** overall car length target in meters (normalizes generated scale) */
+  length: number;
+  parts: Record<PartName, PartFit>;
+  wheels: PartFit[];
+  hinges: { hood: HingeFit; doorL: HingeFit; doorR: HingeFit };
+  /** explode translation distance multiplier */
+  explode: number;
+  /** rest height above the slice ground (hover cars); 0 = grounded */
+  hover?: number;
+}
+
+const fit = (
+  position: [number, number, number],
+  rotation: [number, number, number] = [0, 0, 0],
+  scale = 1,
+): PartFit => ({ position, rotation, scale });
+
+const HALF_PI = Math.PI / 2;
+
+export const DEFAULT_ASSEMBLY: EraAssembly = {
+  length: 4.2,
+  parts: {
+    body: fit([0, 0.72, 0]),
+    // hood height derived from the body's measured fender/hood line, minus
+    // the panel's own crown (generated hoods are domed, not flat slabs)
+    hood: fit([0, 0.58, 1.24], [0, 0, 0], 0.9),
+    // Doors are fitted to the body's measured door APERTURE: the opening is
+    // found by scanning the body skin for the gap at door-card height, then
+    // each door is scaled to that opening and centred in it.
+    doorL: fit([0.55, 0.725, 0.18], [0, 1.55, 0], 0.802),
+    doorR: fit([-0.734, 0.725, 0.18], [0, -1.55, 0], 0.643),
+    wheel: fit([0, 0, 0]), // template; real placement via `wheels`
+  },
+  wheels: [
+    fit([0.7, 0.31, 1.32], [0, HALF_PI, 0]),
+    fit([-0.7, 0.31, 1.32], [0, -HALF_PI, 0]),
+    fit([0.7, 0.31, -1.32], [0, HALF_PI, 0]),
+    fit([-0.7, 0.31, -1.32], [0, -HALF_PI, 0]),
+  ],
+  hinges: {
+    hood: { pivot: [0, 0.95, 0.62], axis: [1, 0, 0], angle: -0.55 },
+    // hinge at the aperture's forward edge so the door swings like a real one
+    doorL: { pivot: [0.55, 0.725, 0.5], axis: [0, 1, 0], angle: -1.0 },
+    doorR: { pivot: [-0.734, 0.725, 0.5], axis: [0, 1, 0], angle: 1.0 },
+  },
+  explode: 1,
+};
+
+const era = (
+  length: number,
+  overrides: {
+    parts?: Partial<Record<PartName, PartFit>>;
+    hinges?: Partial<EraAssembly["hinges"]>;
+    wheels?: PartFit[];
+  },
+): EraAssembly => ({
+  ...DEFAULT_ASSEMBLY,
+  length,
+  parts: { ...DEFAULT_ASSEMBLY.parts, ...overrides.parts },
+  hinges: { ...DEFAULT_ASSEMBLY.hinges, ...overrides.hinges },
+  wheels: overrides.wheels ?? DEFAULT_ASSEMBLY.wheels,
+});
+
+/** era-specific overrides, tuned per delivered pack via the debug-shot loop */
+export const ASSEMBLIES: Record<string, EraAssembly> = {
+  "car-1948": DEFAULT_ASSEMBLY,
+  "car-1965": era(4.5, {
+    parts: {
+      hood: fit([0, 0.67, 1.3], [-HALF_PI + 0.7, 0, 0], 0.9),
+      doorL: fit([0.818, 0.605, 0.06], [0, 1.55, 0], 0.509),
+      doorR: fit([-0.519, 0.605, 0.06], [0, -1.55, 0], 0.561),
+    },
+    hinges: {
+      hood: { pivot: [0, 0.98, 0.55], axis: [1, 0, 0], angle: -0.5 },
+      doorL: { pivot: [0.818, 0.605, 0.38], axis: [0, 1, 0], angle: -1.0 },
+      doorR: { pivot: [-0.519, 0.605, 0.38], axis: [0, 1, 0], angle: 1.0 },
+    },
+  }),
+  "car-1987": era(4.35, {
+    parts: {
+      hood: fit([0, 0.48, 1.35], [0, 0, 0], 0.85),
+      doorL: fit([0.511, 0.745, 0], [0, 1.55, 0], 0.732),
+      doorR: fit([-0.732, 0.745, 0], [0, -1.55, 0], 0.739),
+    },
+    hinges: {
+      hood: { pivot: [0, 0.88, 0.6], axis: [1, 0, 0], angle: -0.5 },
+      doorL: { pivot: [0.511, 0.745, 0.46], axis: [0, 1, 0], angle: -1.0 },
+      doorR: { pivot: [-0.732, 0.745, 0.46], axis: [0, 1, 0], angle: 1.0 },
+    },
+  }),
+  "car-2004": era(4.55, {
+    parts: {
+      // flattest orientation is identity here, not the rotated one
+      hood: fit([0, 0.57, 1.14], [0, 0, 0], 1.05),
+      doorL: fit([0.468, 0.725, 0.38], [0, 1.55, 0], 0.719),
+      doorR: fit([-0.45, 0.725, 0.38], [0, -1.55, 0], 0.682),
+    },
+    hinges: {
+      hood: { pivot: [0, 0.88, 0.6], axis: [1, 0, 0], angle: -0.5 },
+      doorL: { pivot: [0.468, 0.725, 0.82], axis: [0, 1, 0], angle: -1.0 },
+      doorR: { pivot: [-0.45, 0.725, 0.82], axis: [0, 1, 0], angle: 1.0 },
+    },
+  }),
+  // one complete assembly: body, glass and wheels arrive as a single mesh, so
+  // there are no panels to place and no wheels to position
+  "car-2026": era(4.75, {
+    parts: { body: fit([0, 0, 0]) },
+    wheels: [],
+  }),
+  // wheel-less hover GT: no wheel placements, floats above the mirror pool
+  "car-2040": {
+    ...era(4.8, {
+      parts: {
+        hood: fit([0, 0.624, 1.35], [0, 0, 0], 0.86),
+        doorL: fit([0.795, 0.585, 0.06], [0, 1.55, 0], 0.479),
+        doorR: fit([-0.863, 0.585, 0.06], [0, -1.55, 0], 0.479),
+      },
+      hinges: {
+        hood: { pivot: [0, 0.85, 0.6], axis: [1, 0, 0], angle: -0.35 },
+        doorL: { pivot: [0.795, 0.585, 0.38], axis: [0, 1, 0], angle: -1.0 },
+        doorR: { pivot: [-0.863, 0.585, 0.38], axis: [0, 1, 0], angle: 1.0 },
+      },
+      wheels: [],
+    }),
+    hover: 0.45,
+  },
+};
+
+export const vec = (v: [number, number, number]) => new THREE.Vector3(...v);
