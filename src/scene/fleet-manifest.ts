@@ -31,8 +31,8 @@ export const FLEET_MANIFEST: Record<string, EraParts> = {
   "car-1965": { parts: { body: assetUrl("/assets/mint/car-1965-body/original_glb.glb") } },
   // delivered as ONE complete assembly — no panels to fit
   "car-1987": { parts: { body: assetUrl("/assets/mint/car-1987-body/optimized_glb.glb") } },
-  // delivered as ONE complete assembly — no panels to fit
-  "car-2004": { parts: { body: assetUrl("/assets/mint/car-2004-body/optimized_glb.glb") } },
+  // user-supplied silver sedan, delivered as ONE complete assembly
+  "car-2004": { parts: { body: assetUrl("/assets/mint/car-2004-body/original_glb.glb") } },
   // delivered as ONE complete assembly (body, glass and wheels in a single
   // mesh) — nothing to fit, so it has no separate panels
   "car-2026": { parts: { body: assetUrl("/assets/mint/car-2026-body/optimized_glb.glb") } },

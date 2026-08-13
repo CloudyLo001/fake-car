@@ -1093,7 +1093,7 @@
         "manifestVersion": 1,
         "kind": "asset",
         "assetType": "model",
-        "assetId": "ks741hrp866gq8qprq94eeh98s8cc5rh"
+        "assetId": "ks7fm773q0ygh5qxs5dfvt6mq58cc82t"
       },
       "transform": {
         "position": [
@@ -1114,25 +1114,19 @@
       },
       "mode": "local_files",
       "artifacts": {
-        "optimized_glb": {
-          "artifactId": "optimized_glb",
+        "original_glb": {
+          "artifactId": "original_glb",
           "role": "canonical_model",
           "format": "glb",
           "contentType": "model/gltf-binary",
-          "filename": "silver-swept-sedan-8s8cc5rh-optimized.glb",
-          "localPath": "public/assets/mint/car-2004-body/optimized_glb.glb",
+          "filename": "matte-silver-dark-windows-q58cc82t-original.glb",
+          "localPath": "public/assets/mint/car-2004-body/original_glb.glb",
           "loaderHint": "gltf",
-          "byteSize": 1160856,
-          "extensionsUsed": [
-            "EXT_texture_webp",
-            "KHR_draco_mesh_compression"
-          ],
-          "extensionsRequired": [
-            "EXT_texture_webp",
-            "KHR_draco_mesh_compression"
-          ],
-          "usesDraco": true,
-          "requiresDraco": true,
+          "byteSize": 940924,
+          "extensionsUsed": [],
+          "extensionsRequired": [],
+          "usesDraco": false,
+          "requiresDraco": false,
           "usesMeshopt": false,
           "requiresMeshopt": false,
           "usesKtx2": false,
@@ -1144,10 +1138,10 @@
           "role": "preview_image",
           "format": "webp",
           "contentType": "image/webp",
-          "filename": "silver-swept-sedan-8s8cc5rh-preview.webp",
+          "filename": "matte-silver-dark-windows-q58cc82t-preview.webp",
           "localPath": "public/assets/mint/car-2004-body/preview_image.webp",
           "loaderHint": "image",
-          "byteSize": 36932
+          "byteSize": 37214
         }
       },
       "thumbnailUrl": "public/assets/mint/car-2004-body/preview_image.webp"
