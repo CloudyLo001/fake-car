@@ -5,9 +5,17 @@
   --ink-dim: #9aa0a8;
   --bg: #0b0d10;
   --accent: #5de0c8;
-  --serif: Georgia, "Times New Roman", "Palatino Linotype", serif;
-  --sans: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
-  --mono: "Cascadia Code", Consolas, "SF Mono", monospace;
+  /* ---- typography ----
+     The chrome (nav, rail, kickers, spec labels) stays on one constant mono
+     so the UI reads as a steady instrument while the content changes decade.
+     Each .chapter--<era> overrides only --display and --text; the editorial
+     atoms below consume those, so an era declares its faces once. */
+  --house: "Zodiak", Georgia, "Times New Roman", serif; /* the marque itself */
+  --mono: "IBM Plex Mono", "Cascadia Code", Consolas, "SF Mono", monospace;
+  --serif: "Libre Caslon Text", Georgia, "Times New Roman", serif;
+  --sans: "Source Sans 3", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --display: var(--house);
+  --text: var(--sans);
   --rail-w: 72px;
   --nav-h: 64px;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -54,8 +62,8 @@ body.is-locked { overflow: hidden; }
 .preloader__mark { width: 56px; height: 56px; color: var(--ink); }
 .preloader__mark svg { width: 100%; height: 100%; }
 .preloader__word {
-  font-family: var(--sans);
-  font-weight: 300;
+  font-family: var(--house);
+  font-weight: 400;
   letter-spacing: 0.55em;
   text-indent: 0.55em;
   font-size: 14px;
@@ -209,6 +217,7 @@ main { position: relative; z-index: 10; }
 .kicker::before { content: ""; width: 34px; height: 1px; background: currentColor; opacity: 0.6; }
 
 .headline {
+  font-family: var(--display);
   font-size: clamp(38px, 6.2vw, 92px);
   line-height: 0.98;
   font-weight: 600;
@@ -217,6 +226,7 @@ main { position: relative; z-index: 10; }
 }
 
 .deck {
+  font-family: var(--text);
   max-width: 42ch;
   font-size: clamp(14px, 1.1vw, 17px);
   line-height: 1.65;
@@ -237,7 +247,7 @@ main { position: relative; z-index: 10; }
   text-transform: uppercase;
   opacity: 0.55;
 }
-.specs .value { font-size: 15px; font-weight: 600; letter-spacing: 0.02em; }
+.specs .value { font-family: var(--text); font-size: 15px; font-weight: 600; letter-spacing: 0.02em; }
 
 /* per-era ad card sits right column bottom */
 .adcard {
@@ -249,8 +259,8 @@ main { position: relative; z-index: 10; }
 }
 .adcard .adcard__mark { width: 34px; height: 34px; margin-bottom: 14px; }
 .adcard .adcard__mark svg { width: 100%; height: 100%; }
-.adcard h3 { font-size: 19px; line-height: 1.25; margin-bottom: 10px; }
-.adcard p { font-size: 12.5px; line-height: 1.6; opacity: 0.85; }
+.adcard h3 { font-family: var(--display); font-size: 19px; line-height: 1.25; margin-bottom: 10px; }
+.adcard p { font-family: var(--text); font-size: 12.5px; line-height: 1.6; opacity: 0.85; }
 .adcard .footnote {
   margin-top: 14px;
   font-size: 10px;
@@ -295,15 +305,24 @@ main { position: relative; z-index: 10; }
 /* ---- hero ---- */
 .hero { height: 210vh; }
 .hero .chapter__inner { display: block; }
+/* the marque's own voice — belongs to no decade, so it uses the house face */
 .hero__title {
+  font-family: var(--house);
   margin-top: 9vh;
   font-size: clamp(52px, 9.5vw, 150px);
   line-height: 0.95;
-  font-weight: 650;
+  font-weight: 400;
   letter-spacing: -0.02em;
   max-width: 10ch;
 }
-.hero__sub { margin-top: 4vh; max-width: 46ch; line-height: 1.7; color: var(--ink-dim); }
+.hero__sub {
+  font-family: var(--house);
+  font-weight: 300;
+  margin-top: 4vh;
+  max-width: 46ch;
+  line-height: 1.7;
+  color: var(--ink-dim);
+}
 .hero__scroll {
   position: absolute;
   bottom: 6vh;
