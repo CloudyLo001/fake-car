@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { createMintGltfLoader } from "./gltf-runtime";
+import { assetUrl, createMintGltfLoader } from "./gltf-runtime";
 import type { Dioramas } from "./Dioramas";
 
 /**
@@ -15,7 +15,7 @@ interface PropSpec {
   placements: { at: [number, number, number]; yaw?: number; scale?: number }[];
 }
 
-const glb = (key: string) => `/assets/mint/${key}/original_glb.glb`;
+const glb = (key: string) => assetUrl(`/assets/mint/${key}/original_glb.glb`);
 
 /** filled in as prop packs are synchronized */
 export const PROPS: PropSpec[] = [

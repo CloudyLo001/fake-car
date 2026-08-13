@@ -5,6 +5,8 @@
  * clearly-labeled placeholder proxy until the Mint pack is synced. An era
  * may temporarily omit individual parts that are still regenerating.
  */
+import { assetUrl } from "./gltf-runtime";
+
 export type PartName = "body" | "hood" | "doorL" | "doorR" | "wheel";
 
 export interface EraParts {
@@ -16,7 +18,7 @@ const withParts = (
   overrides: Partial<Record<PartName, string>> = {},
   artifact = "optimized_glb",
 ): EraParts => {
-  const glb = (part: string) => `/assets/mint/${era}-${part}/${artifact}.glb`;
+  const glb = (part: string) => assetUrl(`/assets/mint/${era}-${part}/${artifact}.glb`);
   return {
     parts: {
       body: glb("body"),
@@ -38,17 +40,17 @@ export const isSingleMesh = (era: string) => {
 export const FLEET_MANIFEST: Record<string, EraParts> = {
   // user-supplied brass-era touring car, delivered as ONE complete assembly
   // (body, top, brass lamps and spoke wheels in a single mesh)
-  "car-1948": { parts: { body: "/assets/mint/car-1948-body/optimized_glb.glb" } },
+  "car-1948": { parts: { body: assetUrl("/assets/mint/car-1948-body/optimized_glb.glb") } },
   // user-supplied candy-red porthole convertible, delivered as ONE complete
   // assembly (body, chrome and wheels in a single mesh) — no panels to fit
-  "car-1965": { parts: { body: "/assets/mint/car-1965-body/original_glb.glb" } },
+  "car-1965": { parts: { body: assetUrl("/assets/mint/car-1965-body/original_glb.glb") } },
   // delivered as ONE complete assembly — no panels to fit
-  "car-1987": { parts: { body: "/assets/mint/car-1987-body/optimized_glb.glb" } },
+  "car-1987": { parts: { body: assetUrl("/assets/mint/car-1987-body/optimized_glb.glb") } },
   // delivered as ONE complete assembly — no panels to fit
-  "car-2004": { parts: { body: "/assets/mint/car-2004-body/optimized_glb.glb" } },
+  "car-2004": { parts: { body: assetUrl("/assets/mint/car-2004-body/optimized_glb.glb") } },
   // delivered as ONE complete assembly (body, glass and wheels in a single
   // mesh) — nothing to fit, so it has no separate panels
-  "car-2026": { parts: { body: "/assets/mint/car-2026-body/optimized_glb.glb" } },
+  "car-2026": { parts: { body: assetUrl("/assets/mint/car-2026-body/optimized_glb.glb") } },
   // regenerated wheel-less hover car — no wheel part by design
   "car-2040": withParts("car-2040", { wheel: undefined }, "original_glb"),
 };
