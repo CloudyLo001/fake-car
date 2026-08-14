@@ -38,11 +38,37 @@ export class Stage {
   private updates = new Set<StageUpdate>();
   private raf = 0;
 
-  /** camera rig: base framing + small drift; interactions add offsets */
-  readonly camBase = new THREE.Vector3(3.55, 1.45, 4.85);
+  /**
+   * Camera rig: base framing + small drift; interactions add offsets.
+   * camBase sits 20% further down its own sightline than the original
+   * framing, so the whole car reads with air around it rather than filling
+   * the frame.
+   */
+  readonly camBase = new THREE.Vector3(4.26, 1.61, 5.82);
   readonly camTarget = new THREE.Vector3(0, 0.65, 0);
   camOffset = new THREE.Vector3();
   targetOffset = new THREE.Vector3();
+
+  /**
+   * Scroll input is stepped — a wheel notch is a jump, not a slide — so the
+   * timeline writes these targets and the frame loop eases the live values
+   * toward them. Everything downstream (plate rotation, grade, weather,
+   * camera) then moves continuously instead of snapping per notch.
+   */
+  eraTarget = 0;
+  revealTarget = 0;
+  readonly camOffsetTarget = new THREE.Vector3();
+  readonly targetOffsetTarget = new THREE.Vector3();
+  /**
+   * Easing rate; higher is snappier. The scroll timeline now smooths its own
+   * read head, so this stage is deliberately quick — it exists to ease the
+   * transitions that aren't scroll-driven (compare mode) and to take the last
+   * edge off. Stacking two slow filters would just read as lag.
+   * Motion-sensitive users get no easing at all.
+   */
+  private smoothing = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ? Infinity
+    : 9;
   private fog: THREE.FogExp2;
 
   constructor(canvas: HTMLCanvasElement) {
@@ -91,6 +117,18 @@ export class Stage {
     return () => this.updates.delete(fn);
   }
 
+  /**
+   * Jump the rig to its targets with no easing. Boot calls this after the
+   * first measure so the page opens already in the aerial shot — otherwise
+   * the easing would swoop up into it from the default framing on load.
+   */
+  snap() {
+    this.eraFloat = this.eraTarget;
+    this.revealT = this.revealTarget;
+    this.camOffset.copy(this.camOffsetTarget);
+    this.targetOffset.copy(this.targetOffsetTarget);
+  }
+
   start() {
     this.clock.start();
     const loop = () => {
@@ -104,6 +142,26 @@ export class Stage {
       }
       const dt = Math.min(this.clock.getDelta(), 0.1);
       const elapsed = this.clock.elapsedTime;
+
+      // Ease scroll-driven state toward its target before anything reads it,
+      // so the grade, the plate and the camera all move together this frame.
+      // damp() is frame-rate independent; Infinity smoothing snaps.
+      const k = this.smoothing;
+      if (k === Infinity) {
+        this.eraFloat = this.eraTarget;
+        this.revealT = this.revealTarget;
+        this.camOffset.copy(this.camOffsetTarget);
+        this.targetOffset.copy(this.targetOffsetTarget);
+      } else {
+        this.eraFloat = THREE.MathUtils.damp(this.eraFloat, this.eraTarget, k, dt);
+        this.revealT = THREE.MathUtils.damp(this.revealT, this.revealTarget, k, dt);
+        this.camOffset.x = THREE.MathUtils.damp(this.camOffset.x, this.camOffsetTarget.x, k, dt);
+        this.camOffset.y = THREE.MathUtils.damp(this.camOffset.y, this.camOffsetTarget.y, k, dt);
+        this.camOffset.z = THREE.MathUtils.damp(this.camOffset.z, this.camOffsetTarget.z, k, dt);
+        this.targetOffset.x = THREE.MathUtils.damp(this.targetOffset.x, this.targetOffsetTarget.x, k, dt);
+        this.targetOffset.y = THREE.MathUtils.damp(this.targetOffset.y, this.targetOffsetTarget.y, k, dt);
+        this.targetOffset.z = THREE.MathUtils.damp(this.targetOffset.z, this.targetOffsetTarget.z, k, dt);
+      }
 
       const g = sampleGrade(this.eraFloat);
       g.ambient += this.revealT * 0.22;

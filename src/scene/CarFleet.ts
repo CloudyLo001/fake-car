@@ -17,8 +17,34 @@ const PART_TARGET_SIZE: Record<PartName, number> = {
 /** how far the manual exploded view pushes parts along their tuned vectors */
 const EXPLODE_AMPLITUDE = 1.2;
 
+const TAU = Math.PI * 2;
+
 /** radians per second the plate turns during the opening aerial shot */
 const INTRO_SPIN_RATE = 0.16;
+
+/**
+ * Above this intro amount the page counts as "parked at the top" and the
+ * wheel just turns. Below it the descent has begun and the plate is carried
+ * forward onto its landing orientation.
+ */
+const INTRO_PARKED = 0.995;
+
+/**
+ * If the plate is already within this of its landing orientation when the
+ * descent starts, it eases back onto it instead of carrying forward a whole
+ * revolution. ~20° — small enough to read as settling, not rewinding.
+ */
+const INTRO_SETTLE_BACK = 0.35;
+
+/** slower drift for the closing aerial shot */
+const FINALE_SPIN_RATE = 0.05;
+
+/**
+ * Idle float for the wheel-less hover car. Amplitude is in metres either side
+ * of its rest height; at 0.45 rest it never comes near the ground.
+ */
+const HOVER_BOB_AMPLITUDE = 0.105;
+const HOVER_BOB_SPEED = 1.05;
 
 interface CarAssembly {
   key: string;
@@ -64,6 +90,9 @@ export class CarFleet {
   private revealT = 0;
   private introT = 0;
   private introSpinAngle = 0;
+  /** latched landing orientation for the descent; null while parked at top */
+  private introSpinTarget: number | null = null;
+  private finaleSpinAngle = 0;
   private elapsed = 0;
   private reduced: boolean;
   yaw = 0;
@@ -454,18 +483,54 @@ export class CarFleet {
   update(dt: number, eraFloat: number) {
     this.elapsed += dt;
     if (this.introT > 0) {
-      // The opening shot turns the plate; scaling the accumulated angle by
-      // introT unwinds it to exactly 0 as the intro ends, so era 0 lands on
-      // station rather than wherever the spin happened to stop.
-      this.introSpinAngle += dt * INTRO_SPIN_RATE;
-      this.turntable.introSpin = this.introSpinAngle * this.introT;
-    } else if (this.introSpinAngle !== 0) {
+      if (this.introT >= INTRO_PARKED) {
+        // Parked at the top: the wheel simply turns, accumulating freely.
+        // Negative, i.e. the same clockwise direction the chapters turn
+        // (the plate runs to -eraFloat·60°), so the opening spin and the
+        // scroll-through never reverse against each other.
+        this.introSpinAngle -= dt * INTRO_SPIN_RATE;
+        this.introSpinTarget = null;
+        this.turntable.introSpin = this.introSpinAngle;
+      } else {
+        // Scrolling away. Carry on clockwise to the next aligned orientation,
+        // latched once so it can't drift mid-descent. This used to scale the
+        // accumulated angle to zero, which rewound the whole thing backwards
+        // — a minute on the landing page meant one and a half reverse
+        // revolutions before chapter 1 arrived.
+        if (this.introSpinTarget === null) {
+          // How far the plate sits above the next alignment clockwise.
+          const ahead = ((this.introSpinAngle % TAU) + TAU) % TAU;
+          const toNext = Math.min(ahead, TAU - ahead);
+          this.introSpinTarget =
+            toNext <= INTRO_SETTLE_BACK
+              // Already within a hair of an alignment (a fresh page scrolled
+              // straight away): settle onto the nearest one rather than take
+              // a whole pointless lap to reach the next.
+              ? this.introSpinAngle - (ahead <= INTRO_SETTLE_BACK ? ahead : ahead - TAU)
+              // Otherwise keep going clockwise to the alignment below.
+              : this.introSpinAngle - ahead;
+        }
+        const t = 1 - this.introT / INTRO_PARKED;
+        this.turntable.introSpin =
+          this.introSpinAngle + (this.introSpinTarget - this.introSpinAngle) * t;
+      }
+    } else if (this.introSpinAngle !== 0 || this.introSpinTarget !== null) {
+      // Landed: the target was a whole number of turns, so zero is the same
+      // orientation the descent just arrived at.
       this.introSpinAngle = 0;
+      this.introSpinTarget = null;
       this.turntable.introSpin = 0;
     }
     this.turntable.setEra(this.mode === "compare" ? Math.round(eraFloat) : eraFloat);
     if (this.mode === "reveal" && this.introT <= 0) {
-      this.turntable.finaleSpin += dt * 0.05 * this.revealT;
+      // Same unwinding contract as the intro spin. This used to add straight
+      // into turntable.finaleSpin and never come back, so lingering in the
+      // finale and scrolling up left every car permanently off its station.
+      this.finaleSpinAngle += dt * FINALE_SPIN_RATE;
+      this.turntable.finaleSpin = this.finaleSpinAngle * this.revealT;
+    } else if (this.finaleSpinAngle !== 0) {
+      this.finaleSpinAngle = 0;
+      this.turntable.finaleSpin = 0;
     }
 
     this.assemblies.forEach((a) => {
@@ -511,7 +576,7 @@ export class CarFleet {
         const rest = a.partsRoot.userData.restY as number;
         a.partsRoot.position.y = this.reduced
           ? rest
-          : rest + Math.sin(this.elapsed * 1.2) * 0.03;
+          : rest + Math.sin(this.elapsed * HOVER_BOB_SPEED) * HOVER_BOB_AMPLITUDE;
       }
 
       // --- drag yaw only on the centered (or compared) car ---

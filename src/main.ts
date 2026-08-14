@@ -50,8 +50,10 @@ async function boot() {
 
   wireInteractions(stage, fleet, timeline);
   // every listener is wired now — push current scroll state so the opening
-  // aerial framing is in place on the very first rendered frame
+  // aerial framing is in place on the very first rendered frame, then snap
+  // the rig onto it so it doesn't ease in from the default car framing
   timeline.refresh();
+  stage.snap();
   void loadProps(dioramas);
 
   stage.onUpdate((dt, elapsed) => {

@@ -41,7 +41,7 @@ export const ERA_GRADES: EraGrade[] = [
     ambient: 0.14,
     floor: c("#241f18"), floorRoughness: 0.55,
     cyc: c("#171410"), fog: c("#0d0b08"), fogDensity: 0.06,
-    bloom: 0.04, envIntensity: 0.22,
+    bloom: 0.028, envIntensity: 0.22,
     tint: c("#d9ab68"), tintAmount: 0.42, mono: 0.42, saturation: 1.0,
     grain: 0.16, vignette: 0.68,
   },
@@ -53,7 +53,7 @@ export const ERA_GRADES: EraGrade[] = [
     ambient: 0.24,
     floor: c("#372c20"), floorRoughness: 0.45,
     cyc: c("#2a2016"), fog: c("#14100a"), fogDensity: 0.05,
-    bloom: 0.05, envIntensity: 0.3,
+    bloom: 0.035, envIntensity: 0.3,
     tint: c("#e8a75c"), tintAmount: 0.3, mono: 0.0, saturation: 1.55,
     grain: 0.1, vignette: 0.58,
   },
@@ -65,7 +65,7 @@ export const ERA_GRADES: EraGrade[] = [
     ambient: 0.16,
     floor: c("#0b0d15"), floorRoughness: 0.16,
     cyc: c("#070811"), fog: c("#06040e"), fogDensity: 0.055,
-    bloom: 0.12, envIntensity: 0.35,
+    bloom: 0.084, envIntensity: 0.35,
     tint: c("#8f2fd6"), tintAmount: 0.16, mono: 0.0, saturation: 1.45,
     grain: 0.1, vignette: 0.5,
   },
@@ -77,31 +77,38 @@ export const ERA_GRADES: EraGrade[] = [
     ambient: 0.32,
     floor: c("#33373b"), floorRoughness: 0.55,
     cyc: c("#2c3138"), fog: c("#171b21"), fogDensity: 0.038,
-    bloom: 0.04, envIntensity: 0.5,
+    bloom: 0.028, envIntensity: 0.5,
     tint: c("#7da4cc"), tintAmount: 0.14, mono: 0.0, saturation: 1.25,
     grain: 0.04, vignette: 0.42,
   },
-  // 2026 — Tesla studio: bright even white-grey, controlled (never clipping)
+  // 2026 — Tesla studio: bright even white-grey, controlled (never clipping).
+  // Rig pulled down 30% — it was the brightest chapter on the page.
   {
-    key: c("#f4f7fa"), keyIntensity: 290,
-    fill: c("#c9ced3"), fillIntensity: 0.85,
-    rimA: c("#eef1f4"), rimB: c("#b9c0c6"), rimIntensity: 70,
-    ambient: 0.5,
+    key: c("#f4f7fa"), keyIntensity: 203,
+    fill: c("#c9ced3"), fillIntensity: 0.595,
+    rimA: c("#eef1f4"), rimB: c("#b9c0c6"), rimIntensity: 49,
+    ambient: 0.35,
     floor: c("#95999e"), floorRoughness: 0.4,
     cyc: c("#b4b8bc"), fog: c("#84898e"), fogDensity: 0.022,
-    bloom: 0.02, envIntensity: 0.65,
+    bloom: 0.014, envIntensity: 0.455,
     tint: c("#aeb8c2"), tintAmount: 0.06, mono: 0.0, saturation: 1.15,
     grain: 0.01, vignette: 0.26,
   },
-  // 2040s — neon night, lifted so the hover car clearly reads
+  // 2040s — neon night. Rig pulled down 30%: the rim pair especially was
+  // blowing out the hover car's own neon streaks.
   {
-    key: c("#d4f5ea"), keyIntensity: 310,
-    fill: c("#265058"), fillIntensity: 0.62,
-    rimA: c("#3fd9bb"), rimB: c("#3a80b8"), rimIntensity: 230,
-    ambient: 0.3,
+    key: c("#d4f5ea"), keyIntensity: 217,
+    fill: c("#265058"), fillIntensity: 0.434,
+    // The teal rim was the source of every green hotspot — its speculars on
+    // the glossy car and the wet floor were what flared. Halved; the car's
+    // own emissive neon streaks carry the colour instead.
+    rimA: c("#3fd9bb"), rimB: c("#3a80b8"), rimIntensity: 80,
+    ambient: 0.21,
     floor: c("#0a1219"), floorRoughness: 0.1,
     cyc: c("#08121a"), fog: c("#04101a"), fogDensity: 0.042,
-    bloom: 0.13, envIntensity: 0.5,
+    // bloom is what turned teal speculars into blown-out green blobs here —
+    // this is the lowest of any era, so the neon streaks glow without flaring
+    bloom: 0.045, envIntensity: 0.35,
     tint: c("#2fc9ac"), tintAmount: 0.15, mono: 0.0, saturation: 1.35,
     grain: 0.06, vignette: 0.52,
   },

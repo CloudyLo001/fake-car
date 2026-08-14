@@ -16,12 +16,28 @@
   --sans: "Source Sans 3", "Segoe UI", system-ui, -apple-system, sans-serif;
   --display: var(--house);
   --text: var(--sans);
+
+  /* ---- type shadow ----
+     Type sits directly on the WebGL scene, and that backdrop changes
+     brightness every chapter, so each atom carries its own shadow to hold
+     its edge. text-shadow inherits, so the small value is set on body and
+     the larger ones are layered onto the display atoms. Two contexts flip
+     polarity and override these: the 2026 chapter (dark type on the bright
+     studio) and the printed ad cards. */
+  --type-shadow-lg: 0 6px 26px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.42);
+  --type-shadow: 0 2px 12px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.42);
+  --type-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.6);
   --rail-w: 72px;
   --nav-h: 64px;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* Form controls don't pick up the inherited text-shadow — the UA stylesheet
+   resets it — so the toolbar buttons and selects sat flat against the scene
+   while everything around them was shadowed. */
+button, select, input, textarea { text-shadow: inherit; }
 
 html { scroll-behavior: auto; }
 
@@ -31,6 +47,8 @@ body {
   font-family: var(--sans);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  /* inherited baseline: every glyph on the page gets at least this */
+  text-shadow: var(--type-shadow-sm);
 }
 
 body.is-locked { overflow: hidden; }
@@ -223,6 +241,7 @@ main { position: relative; z-index: 10; }
   font-weight: 600;
   max-width: 12ch;
   margin-bottom: 3.5vh;
+  text-shadow: var(--type-shadow-lg);
 }
 
 .deck {
@@ -231,6 +250,7 @@ main { position: relative; z-index: 10; }
   font-size: clamp(14px, 1.1vw, 17px);
   line-height: 1.65;
   opacity: 0.85;
+  text-shadow: var(--type-shadow);
 }
 
 .specs {
@@ -247,7 +267,13 @@ main { position: relative; z-index: 10; }
   text-transform: uppercase;
   opacity: 0.55;
 }
-.specs .value { font-family: var(--text); font-size: 15px; font-weight: 600; letter-spacing: 0.02em; }
+.specs .value {
+  font-family: var(--text);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-shadow: var(--type-shadow);
+}
 
 /* per-era ad card sits right column bottom */
 .adcard {
@@ -303,7 +329,10 @@ main { position: relative; z-index: 10; }
 }
 
 /* ---- hero ---- */
-.hero { height: 210vh; }
+/* 210vh made the top of the page feel stuck: the pin holds for a full
+   110vh of scrolling before the hero releases. 155vh keeps room for the
+   opening camera move while letting the first chapter arrive promptly. */
+.hero { height: 155vh; }
 .hero .chapter__inner { display: block; }
 /* the marque's own voice — belongs to no decade, so it uses the house face */
 .hero__title {
@@ -314,6 +343,7 @@ main { position: relative; z-index: 10; }
   font-weight: 400;
   letter-spacing: -0.02em;
   max-width: 10ch;
+  text-shadow: var(--type-shadow-lg);
 }
 .hero__sub {
   font-family: var(--house);
@@ -322,6 +352,7 @@ main { position: relative; z-index: 10; }
   max-width: 46ch;
   line-height: 1.7;
   color: var(--ink-dim);
+  text-shadow: var(--type-shadow);
 }
 .hero__scroll {
   position: absolute;

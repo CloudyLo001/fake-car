@@ -28,7 +28,9 @@ export function wireInteractions(stage: Stage, fleet: CarFleet, timeline: Scroll
       });
       setCallouts(null);
     }
-    stage.eraFloat = compareOpen ? stage.eraFloat : s.eraFloat;
+    // These are targets, not live values — Stage eases toward them each frame
+    // so stepped wheel input reads as continuous motion.
+    stage.eraTarget = compareOpen ? stage.eraTarget : s.eraFloat;
     stage.handoffT = s.handoffT;
     fleet.setReveal(s.revealT);
     fleet.setIntro(s.introT);
@@ -39,9 +41,9 @@ export function wireInteractions(stage: Stage, fleet: CarFleet, timeline: Scroll
     // (center at z = -6) is in frame.
     if (!compareOpen) {
       const t = s.revealT;
-      stage.revealT = t;
-      stage.camOffset.set(t * -1.2, t * 13.5, t * 7.5);
-      stage.targetOffset.set(0, t * -0.55, t * -6.0);
+      stage.revealTarget = t;
+      stage.camOffsetTarget.set(t * -1.2, t * 13.5, t * 7.5);
+      stage.targetOffsetTarget.set(0, t * -0.55, t * -6.0);
     }
   });
 
@@ -158,9 +160,9 @@ export function wireInteractions(stage: Stage, fleet: CarFleet, timeline: Scroll
     fleet.setCompare([ERAS[a].key, ERAS[b].key]);
     card(panel.querySelector("#cmp-card-a")!, a);
     card(panel.querySelector("#cmp-card-b")!, b);
-    // frontal two-shot framing
-    stage.camOffset.set(-2.1, 0.45, 3.4);
-    stage.targetOffset.set(-0.6, 0, -0.4);
+    // frontal two-shot framing — the rig eases into it
+    stage.camOffsetTarget.set(-2.1, 0.45, 3.4);
+    stage.targetOffsetTarget.set(-0.6, 0, -0.4);
   };
 
   const openCompare = (fromEra: string) => {
@@ -178,8 +180,8 @@ export function wireInteractions(stage: Stage, fleet: CarFleet, timeline: Scroll
     panel.classList.remove("is-open");
     document.body.classList.remove("is-locked");
     fleet.setCompare(null);
-    stage.camOffset.set(0, 0, 0);
-    stage.targetOffset.set(0, 0, 0);
+    stage.camOffsetTarget.set(0, 0, 0);
+    stage.targetOffsetTarget.set(0, 0, 0);
   };
 
   selA.addEventListener("change", applyCompare);

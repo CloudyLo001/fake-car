@@ -202,26 +202,31 @@ export class Dioramas {
       case "none":
         break;
       case "pool": {
+        // Was a near-perfect mirror (roughness 0.02, metalness 1) which
+        // reflected the teal rim spot as a blinding green streak across the
+        // floor. Rougher and much less metallic: still a damp sheen, but it
+        // scatters the highlight instead of mirroring it back at full power.
         const pool = new THREE.Mesh(
           new THREE.CircleGeometry(3.3, 48),
           new THREE.MeshStandardMaterial({
-            color: 0x04070b, roughness: 0.02, metalness: 1.0,
+            color: 0x04070b, roughness: 0.55, metalness: 0.25,
           }),
         );
         pool.position.set(s.x, 0.024, s.z);
         add(pool);
         const ring = new THREE.Mesh(
           new THREE.RingGeometry(3.3, 3.42, 48),
-          new THREE.MeshBasicMaterial({ color: 0x5de0c8, transparent: true, opacity: 0.55 }),
+          new THREE.MeshBasicMaterial({ color: 0x5de0c8, transparent: true, opacity: 0.32 }),
         );
         ring.position.set(s.x, 0.026, s.z);
         add(ring);
-        // soft under-glow beneath the hovering car
+        // Soft under-glow beneath the hovering car. Normal blending, not
+        // additive: additive stacked on the dark floor and clipped straight
+        // to white-green, which is what read as a hot blob under the car.
         const glow = new THREE.Mesh(
           new THREE.CircleGeometry(1.9, 40),
           new THREE.MeshBasicMaterial({
-            color: 0x5de0c8, transparent: true, opacity: 0.28,
-            blending: THREE.AdditiveBlending, depthWrite: false,
+            color: 0x2f7d70, transparent: true, opacity: 0.3, depthWrite: false,
           }),
         );
         glow.position.set(s.x, 0.03, s.z);
