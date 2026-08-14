@@ -25,8 +25,8 @@ async function boot() {
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const weather = new Weather(reduced);
   stage.scene.add(weather.group);
+  // the fleet parents every car to the turntable, so it adds nothing here
   const fleet = new CarFleet(turntable, reduced);
-  stage.scene.add(fleet.group);
 
   const timeline = new ScrollTimeline();
   timeline.attach();

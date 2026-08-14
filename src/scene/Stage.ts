@@ -3,6 +3,7 @@ import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+import { SMAAPass } from "three/addons/postprocessing/SMAAPass.js";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import type { ShaderPass } from "three/addons/postprocessing/ShaderPass.js";
 import { createGradePass } from "./GradePass";
@@ -10,6 +11,10 @@ import { Studio } from "./Studio";
 import { sampleGrade } from "./EraGrades";
 
 export type StageUpdate = (dt: number, elapsed: number) => void;
+
+/** reused in the frame loop so it allocates nothing per frame */
+const SCRATCH_SIZE = new THREE.Vector2();
+const SCRATCH_TARGET = new THREE.Vector3();
 
 /**
  * Single owner of renderer, scene, camera, composer, resize, and the frame
@@ -61,9 +66,8 @@ export class Stage {
   readonly targetOffsetTarget = new THREE.Vector3();
   /**
    * Easing rate; higher is snappier. The scroll timeline now smooths its own
-   * read head, so this stage is deliberately quick — it exists to ease the
-   * transitions that aren't scroll-driven (compare mode) and to take the last
-   * edge off. Stacking two slow filters would just read as lag.
+   * read head, so this stage is deliberately quick — it exists only to take
+   * the last edge off. Stacking two slow filters would just read as lag.
    * Motion-sensitive users get no easing at all.
    */
   private smoothing = window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -99,6 +103,15 @@ export class Stage {
     this.studio = new Studio();
     this.scene.add(this.studio.group);
 
+    // The `antialias: true` above only ever applied to the default
+    // framebuffer, which EffectComposer bypasses entirely — so the page had no
+    // anti-aliasing at all and every edge crawled.
+    //
+    // MSAA on the composer target is the obvious fix but a terrible trade
+    // here: measured on Intel integrated graphics, 4x samples on a half-float
+    // target cost 22ms/frame on its own — more than the rest of the renderer
+    // combined. SMAA is a single post pass costing ~3ms for comparable edges,
+    // so the chain stays un-multisampled and resolves aliasing at the end.
     this.composer = new EffectComposer(this.renderer);
     this.composer.addPass(new RenderPass(this.scene, this.camera));
     // high threshold: only genuine light sources bloom, never lit surfaces
@@ -107,6 +120,8 @@ export class Stage {
     this.grade = createGradePass();
     this.composer.addPass(this.grade);
     this.composer.addPass(new OutputPass());
+    // last, so it anti-aliases the tone-mapped image rather than raw HDR
+    this.composer.addPass(new SMAAPass());
 
     this.resize();
     window.addEventListener("resize", () => this.resize());
@@ -137,7 +152,8 @@ export class Stage {
       const w = window.innerWidth;
       const h = window.innerHeight;
       if (w > 0 && h > 0) {
-        const size = this.renderer.getSize(new THREE.Vector2());
+        // scratch vector: this runs every frame, so don't allocate here
+        const size = this.renderer.getSize(SCRATCH_SIZE);
         if (size.x !== w || size.y !== h) this.resize();
       }
       const dt = Math.min(this.clock.getDelta(), 0.1);
@@ -189,8 +205,7 @@ export class Stage {
         this.camBase.y + Math.cos(this.eraFloat * 1.3) * drift * 0.6 + this.camOffset.y,
         this.camBase.z + this.camOffset.z,
       );
-      const t = this.camTarget.clone().add(this.targetOffset);
-      this.camera.lookAt(t);
+      this.camera.lookAt(SCRATCH_TARGET.copy(this.camTarget).add(this.targetOffset));
 
       this.composer.render();
     };
@@ -205,9 +220,20 @@ export class Stage {
     const w = window.innerWidth;
     const h = window.innerHeight;
     const mobile = w < 900;
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, mobile ? 1.5 : 1.75));
+    const ratio = Math.min(window.devicePixelRatio, mobile ? 1.5 : 1.75);
+    this.renderer.setPixelRatio(ratio);
     this.renderer.setSize(w, h);
+    // EffectComposer latches the pixel ratio in its constructor, so without
+    // this the post chain kept rendering at the desktop 1.75 while the canvas
+    // dropped to 1.5 on phones — more shaded pixels than the canvas can show,
+    // on exactly the devices least able to afford them.
+    this.composer.setPixelRatio(ratio);
     this.composer.setSize(w, h);
+    // Bloom ran its 12 blur passes at full resolution and cost ~half the
+    // frame. It is a blur — resolving it at half res is invisible in the
+    // output but quarters the pixels those passes touch. Must follow
+    // composer.setSize(), which would otherwise reset it to full size.
+    this.bloom.setSize((w * ratio) / 2, (h * ratio) / 2);
     this.camera.aspect = w / h;
     // keep the car framed on narrow screens
     this.camera.fov = w / h < 0.8 ? 46 : 34;

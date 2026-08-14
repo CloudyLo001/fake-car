@@ -19,6 +19,9 @@ const EXPLODE_AMPLITUDE = 1.2;
 
 const TAU = Math.PI * 2;
 
+/** reused by the per-frame hinge update so it allocates nothing */
+const SCRATCH_AXIS = new THREE.Vector3();
+
 /** radians per second the plate turns during the opening aerial shot */
 const INTRO_SPIN_RATE = 0.16;
 
@@ -50,7 +53,6 @@ interface CarAssembly {
   key: string;
   index: number;
   root: THREE.Group; // station placement on the plate
-  yaw: THREE.Group; // user rotation
   partsRoot: THREE.Group;
   parts: Partial<Record<PartName, THREE.Group>>;
   wheelClones: THREE.Group[];
@@ -65,28 +67,23 @@ interface CarAssembly {
   /** manual exploded-view toggle (only meaningful when centered) */
   manualExplode: number;
   manualTarget: number;
-  /** transform bookkeeping for compare mode attach/restore */
-  home: { position: THREE.Vector3; quaternion: THREE.Quaternion } | null;
 }
 
 export type FleetProgress = (loaded: number, total: number, label: string) => void;
 
 /**
  * Loads and owns the six generation assemblies on the turntable. Single
- * owner of station placement, the arrival assembly scrub, hinge state,
- * compare/finale arrangements, and the 2026 customizer.
+ * owner of station placement, the arrival assembly scrub, hinge state, the
+ * finale arrangement, and the 2026 customizer.
  */
 export class CarFleet {
-  /** holds only off-plate arrangements (compare mode) */
-  readonly group = new THREE.Group();
   private assemblies = new Map<string, CarAssembly>();
   private loader = createMintGltfLoader();
   private turntable: Turntable;
   private finaleLights: THREE.SpotLight[] = [];
   // "reveal" is the aerial ring framing, used by both the hero intro and the
-  // closing lineage shot: no car is centered, so none takes drag or doors.
-  private mode: "scroll" | "compare" | "reveal" = "scroll";
-  private compareKeys: [string, string] | null = null;
+  // closing lineage shot: no car is centered, so none takes doors.
+  private mode: "scroll" | "reveal" = "scroll";
   private revealT = 0;
   private introT = 0;
   private introSpinAngle = 0;
@@ -95,8 +92,6 @@ export class CarFleet {
   private finaleSpinAngle = 0;
   private elapsed = 0;
   private reduced: boolean;
-  yaw = 0;
-  yawVelocity = 0;
 
   constructor(turntable: Turntable, reduced = false) {
     this.turntable = turntable;
@@ -126,13 +121,11 @@ export class CarFleet {
     const root = new THREE.Group();
     root.position.copy(station.position);
     root.rotation.y = station.yaw;
-    const yaw = new THREE.Group();
-    root.add(yaw);
     const partsRoot = new THREE.Group();
-    yaw.add(partsRoot);
+    root.add(partsRoot);
 
     const assembly: CarAssembly = {
-      key, index, root, yaw, partsRoot,
+      key, index, root, partsRoot,
       parts: {}, wheelClones: [], hinges: {},
       paintMaterials: [], wheelMaterials: [],
       explodeVectors: new Map(),
@@ -140,7 +133,6 @@ export class CarFleet {
       config,
       doorsOpen: 0, doorsTarget: 0,
       manualExplode: 0, manualTarget: 0,
-      home: null,
     };
 
     if (!manifest?.parts) {
@@ -371,6 +363,10 @@ export class CarFleet {
       const station = Turntable.stationTransform(i);
       light.position.set(station.position.x, 6.2, station.position.z);
       light.target.position.copy(station.position);
+      // Start hidden. three.js includes any VISIBLE light in every material's
+      // shader regardless of intensity, so leaving these at intensity 0 still
+      // cost nine spot-light evaluations per fragment across the whole scene.
+      light.visible = false;
       this.turntable.group.add(light, light.target);
       this.finaleLights.push(light);
     });
@@ -409,48 +405,10 @@ export class CarFleet {
     if (a) a.manualTarget = on ? 1 : 0;
   }
 
-  setCompare(keys: [string, string] | null) {
-    if (keys && !this.compareKeys) {
-      this.compareKeys = keys;
-      this.mode = "compare";
-      const lateral = new THREE.Vector3(0.8, 0, -0.6).normalize();
-      keys.forEach((key, slot) => {
-        const a = this.assemblies.get(key);
-        if (!a) return;
-        a.home = {
-          position: a.root.position.clone(),
-          quaternion: a.root.quaternion.clone(),
-        };
-        this.group.attach(a.root);
-        const pos = lateral.clone().multiplyScalar(slot === 0 ? -1.95 : 1.95);
-        a.root.position.set(pos.x, 0.12, pos.z);
-        a.root.quaternion.setFromAxisAngle(
-          new THREE.Vector3(0, 1, 0),
-          slot === 0 ? 0.4 : -0.4,
-        );
-      });
-      this.assemblies.forEach((a) => {
-        if (!keys.includes(a.key)) a.root.visible = false;
-      });
-    } else if (!keys && this.compareKeys) {
-      this.compareKeys.forEach((key) => {
-        const a = this.assemblies.get(key);
-        if (!a?.home) return;
-        this.turntable.group.attach(a.root);
-        a.root.position.copy(a.home.position);
-        a.root.quaternion.copy(a.home.quaternion);
-        a.home = null;
-      });
-      this.assemblies.forEach((a) => (a.root.visible = true));
-      this.compareKeys = null;
-      this.mode = "scroll";
-    }
-  }
-
   /** aerial ring framing amount, shared by the hero intro and the finale */
   setReveal(t: number) {
     this.revealT = t;
-    this.mode = t > 0 ? "reveal" : this.compareKeys ? "compare" : "scroll";
+    this.mode = t > 0 ? "reveal" : "scroll";
   }
 
   /** hero-only: how much of the opening plate spin is still applied */
@@ -521,7 +479,7 @@ export class CarFleet {
       this.introSpinTarget = null;
       this.turntable.introSpin = 0;
     }
-    this.turntable.setEra(this.mode === "compare" ? Math.round(eraFloat) : eraFloat);
+    this.turntable.setEra(eraFloat);
     if (this.mode === "reveal" && this.introT <= 0) {
       // Same unwinding contract as the intro spin. This used to add straight
       // into turntable.finaleSpin and never come back, so lingering in the
@@ -565,7 +523,10 @@ export class CarFleet {
         hinge: { axis: [number, number, number]; angle: number },
       ) => {
         if (!h) return;
-        h.quaternion.setFromAxisAngle(vec(hinge.axis).normalize(), hinge.angle * a.doorsOpen);
+        // scratch vector, normalised in place: this ran 18 times a frame and
+        // allocated a Vector3 each time, for axes that never change
+        SCRATCH_AXIS.set(...hinge.axis).normalize();
+        h.quaternion.setFromAxisAngle(SCRATCH_AXIS, hinge.angle * a.doorsOpen);
       };
       applyHinge(a.hinges.hood, a.config.hinges.hood);
       applyHinge(a.hinges.doorL, a.config.hinges.doorL);
@@ -579,22 +540,15 @@ export class CarFleet {
           : rest + Math.sin(this.elapsed * HOVER_BOB_SPEED) * HOVER_BOB_AMPLITUDE;
       }
 
-      // --- drag yaw only on the centered (or compared) car ---
-      const yawActive = centered || (this.compareKeys?.includes(a.key) ?? false);
-      a.yaw.rotation.y = yawActive
-        ? this.yaw
-        : THREE.MathUtils.damp(a.yaw.rotation.y, 0, 4, dt);
     });
 
+    // Toggle visibility, not just intensity — an invisible light is dropped
+    // from the shader entirely, a zero-intensity one is not.
+    const ringLit = this.mode === "reveal" && this.revealT > 0.001;
     this.finaleLights.forEach((l) => {
-      l.intensity = this.mode === "reveal" ? this.revealT * 300 : 0;
+      l.visible = ringLit;
+      if (ringLit) l.intensity = this.revealT * 300;
     });
-
-    this.yaw += this.yawVelocity * dt;
-    this.yawVelocity *= Math.exp(-2.2 * dt);
-    if (Math.abs(this.yawVelocity) < 0.02) {
-      this.yaw = THREE.MathUtils.damp(this.yaw, 0, 1.2, dt);
-    }
   }
 
   dispose() {

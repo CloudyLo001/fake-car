@@ -34,7 +34,7 @@
       "artifacts": {
         "optimized_glb": {
           "artifactId": "optimized_glb",
-          "role": "canonical_model",
+          "role": "source_model",
           "format": "glb",
           "contentType": "model/gltf-binary",
           "filename": "black-brass-touring-car-en8cc1tg-optimized.glb",
@@ -66,6 +66,31 @@
           "localPath": "public/assets/mint/car-1948-body/preview_image.webp",
           "loaderHint": "image",
           "byteSize": 48116
+        },
+        "web_glb": {
+          "artifactId": "web_glb",
+          "role": "canonical_model",
+          "format": "glb",
+          "contentType": "model/gltf-binary",
+          "filename": "black-brass-touring-car-en8cc1tg-web.glb",
+          "localPath": "public/assets/mint/car-1948-body/web_glb.glb",
+          "loaderHint": "gltf",
+          "byteSize": 1174808,
+          "derivedFrom": "optimized_glb",
+          "derivedBy": "scripts/slim-models.mjs (weld + meshopt simplify to ~40k tris, Draco re-encode)",
+          "extensionsUsed": [
+            "KHR_draco_mesh_compression"
+          ],
+          "extensionsRequired": [
+            "KHR_draco_mesh_compression"
+          ],
+          "usesDraco": true,
+          "requiresDraco": true,
+          "usesMeshopt": false,
+          "requiresMeshopt": false,
+          "usesKtx2": false,
+          "requiresKtx2": false,
+          "unknownRequiredExtensions": []
         }
       },
       "thumbnailUrl": "public/assets/mint/car-1948-body/preview_image.webp"
@@ -820,7 +845,7 @@
       "artifacts": {
         "optimized_glb": {
           "artifactId": "optimized_glb",
-          "role": "canonical_model",
+          "role": "source_model",
           "format": "glb",
           "contentType": "model/gltf-binary",
           "filename": "full-assembly-fs8cd0rc-optimized.glb",
@@ -852,6 +877,31 @@
           "localPath": "public/assets/mint/car-1987-body/preview_image.webp",
           "loaderHint": "image",
           "byteSize": 48802
+        },
+        "web_glb": {
+          "artifactId": "web_glb",
+          "role": "canonical_model",
+          "format": "glb",
+          "contentType": "model/gltf-binary",
+          "filename": "full-assembly-fs8cd0rc-web.glb",
+          "localPath": "public/assets/mint/car-1987-body/web_glb.glb",
+          "loaderHint": "gltf",
+          "byteSize": 1193404,
+          "derivedFrom": "optimized_glb",
+          "derivedBy": "scripts/slim-models.mjs (weld + meshopt simplify to ~40k tris, Draco re-encode)",
+          "extensionsUsed": [
+            "KHR_draco_mesh_compression"
+          ],
+          "extensionsRequired": [
+            "KHR_draco_mesh_compression"
+          ],
+          "usesDraco": true,
+          "requiresDraco": true,
+          "usesMeshopt": false,
+          "requiresMeshopt": false,
+          "usesKtx2": false,
+          "requiresKtx2": false,
+          "unknownRequiredExtensions": []
         }
       },
       "thumbnailUrl": "public/assets/mint/car-1987-body/preview_image.webp"
@@ -1406,7 +1456,7 @@
       "artifacts": {
         "optimized_glb": {
           "artifactId": "optimized_glb",
-          "role": "canonical_model",
+          "role": "source_model",
           "format": "glb",
           "contentType": "model/gltf-binary",
           "filename": "pearl-shadow-diffuser-3n8ccc4h-optimized.glb",
@@ -1438,6 +1488,31 @@
           "localPath": "public/assets/mint/car-2026-body/preview_image.webp",
           "loaderHint": "image",
           "byteSize": 39808
+        },
+        "web_glb": {
+          "artifactId": "web_glb",
+          "role": "canonical_model",
+          "format": "glb",
+          "contentType": "model/gltf-binary",
+          "filename": "pearl-shadow-diffuser-3n8ccc4h-web.glb",
+          "localPath": "public/assets/mint/car-2026-body/web_glb.glb",
+          "loaderHint": "gltf",
+          "byteSize": 1201916,
+          "derivedFrom": "optimized_glb",
+          "derivedBy": "scripts/slim-models.mjs (weld + meshopt simplify to ~40k tris, Draco re-encode)",
+          "extensionsUsed": [
+            "KHR_draco_mesh_compression"
+          ],
+          "extensionsRequired": [
+            "KHR_draco_mesh_compression"
+          ],
+          "usesDraco": true,
+          "requiresDraco": true,
+          "usesMeshopt": false,
+          "requiresMeshopt": false,
+          "usesKtx2": false,
+          "requiresKtx2": false,
+          "unknownRequiredExtensions": []
         }
       },
       "thumbnailUrl": "public/assets/mint/car-2026-body/preview_image.webp"
@@ -1802,7 +1877,7 @@
       "artifacts": {
         "optimized_glb": {
           "artifactId": "optimized_glb",
-          "role": "canonical_model",
+          "role": "source_model",
           "format": "glb",
           "contentType": "model/gltf-binary",
           "filename": "brighter-neon-streaks-hover-818cc50v-optimized.glb",
@@ -1834,6 +1909,31 @@
           "localPath": "public/assets/mint/car-2040-body/preview_image.webp",
           "loaderHint": "image",
           "byteSize": 33062
+        },
+        "web_glb": {
+          "artifactId": "web_glb",
+          "role": "canonical_model",
+          "format": "glb",
+          "contentType": "model/gltf-binary",
+          "filename": "brighter-neon-streaks-hover-818cc50v-web.glb",
+          "localPath": "public/assets/mint/car-2040-body/web_glb.glb",
+          "loaderHint": "gltf",
+          "byteSize": 1002028,
+          "derivedFrom": "optimized_glb",
+          "derivedBy": "scripts/slim-models.mjs (weld + meshopt simplify to ~40k tris, Draco re-encode)",
+          "extensionsUsed": [
+            "KHR_draco_mesh_compression"
+          ],
+          "extensionsRequired": [
+            "KHR_draco_mesh_compression"
+          ],
+          "usesDraco": true,
+          "requiresDraco": true,
+          "usesMeshopt": false,
+          "requiresMeshopt": false,
+          "usesKtx2": false,
+          "requiresKtx2": false,
+          "unknownRequiredExtensions": []
         }
       },
       "thumbnailUrl": "public/assets/mint/car-2040-body/preview_image.webp"

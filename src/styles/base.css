@@ -320,13 +320,6 @@ main { position: relative; z-index: 10; }
 }
 .tool-btn:hover, .tool-btn:focus-visible { opacity: 1; }
 .tool-btn.is-on { background: var(--ink); color: var(--bg); opacity: 1; }
-.tool-hint {
-  font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  opacity: 0.5;
-}
 
 /* ---- hero ---- */
 /* 210vh made the top of the page feel stuck: the pin holds for a full
@@ -531,59 +524,6 @@ main { position: relative; z-index: 10; }
 }
 .callout.is-hidden { opacity: 0; }
 
-/* ---- compare mode ---- */
-.compare-panel {
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-  display: none;
-  pointer-events: none;
-}
-.compare-panel.is-open { display: block; }
-.compare-panel__bar {
-  position: absolute;
-  top: calc(var(--nav-h) + 12px);
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  pointer-events: auto;
-  background: rgba(10, 12, 14, 0.55);
-  backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 999px;
-  padding: 6px 10px;
-}
-.compare-panel__bar select {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  color: var(--ink);
-  font-family: var(--mono);
-  font-size: 11px;
-  border-radius: 999px;
-  padding: 6px 10px;
-}
-.compare-panel__bar select option { color: #111; }
-.compare-card {
-  position: absolute;
-  bottom: 7vh;
-  width: min(300px, 38vw);
-  pointer-events: auto;
-  padding: 20px 22px;
-  background: rgba(10, 12, 14, 0.55);
-  backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-}
-.compare-card--a { left: 7vw; }
-.compare-card--b { right: 7vw; }
-.compare-card h3 { font-size: 17px; margin-bottom: 4px; }
-.compare-card .year { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; color: var(--ink-dim); }
-.compare-card ul { list-style: none; margin-top: 14px; }
-.compare-card li { display: flex; justify-content: space-between; font-size: 12px; padding: 5px 0; border-top: 1px solid rgba(255,255,255,0.08); }
-.compare-card li .label { opacity: 0.55; }
-
 /* ---- customizer ---- */
 .customizer {
   display: flex;
@@ -657,8 +597,5 @@ main { position: relative; z-index: 10; }
   .switcher { bottom: 14px; max-width: 94vw; overflow-x: auto; }
   .hero__years { display: none; }
   .site-footer { grid-template-columns: 1fr; gap: 28px; }
-  .compare-card { width: 42vw; padding: 14px; }
-  .compare-card--a { left: 4vw; }
-  .compare-card--b { right: 4vw; }
   .finale__lineup { flex-wrap: wrap; }
 }

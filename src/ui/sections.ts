@@ -38,18 +38,13 @@ function heroHtml() {
 }
 
 function chapterHtml(era: Era) {
-  // a single-mesh car has no panels to open or take apart
-  const panelTools = isSingleMesh(era.key)
-    ? []
-    : [
-        `<button class="tool-btn" data-action="doors" data-era="${era.key}">Open doors</button>`,
-        `<button class="tool-btn" data-action="explode" data-era="${era.key}">Explode</button>`,
-      ];
-  const tools = [
-    ...panelTools,
-    `<button class="tool-btn" data-action="compare" data-era="${era.key}">Compare</button>`,
-    `<span class="tool-hint">Drag the car to rotate</span>`,
-  ].join("");
+  // A single-mesh car has no panels to open or take apart. Every era ships as
+  // one mesh today, so the toolbar is empty and omitted entirely — but a
+  // future part-pack era would bring its buttons back automatically.
+  const tools = isSingleMesh(era.key)
+    ? ""
+    : `<button class="tool-btn" data-action="doors" data-era="${era.key}">Open doors</button>` +
+      `<button class="tool-btn" data-action="explode" data-era="${era.key}">Explode</button>`;
 
   const customizer = era.key === "car-2026" ? customizerHtml(era.key) : "";
 
@@ -72,7 +67,7 @@ function chapterHtml(era: Era) {
           <p>${era.adBody}</p>
           ${era.adFootnote ? `<p class="footnote">${era.adFootnote}</p>` : ""}
         </aside>
-        <div class="chapter__tools reveal r4">${tools}</div>
+        ${tools ? `<div class="chapter__tools reveal r4">${tools}</div>` : ""}
       </div>
     </div>
   </section>`;

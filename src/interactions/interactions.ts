@@ -1,18 +1,15 @@
 import * as THREE from "three";
-import { CUSTOMIZER_PAINTS, CUSTOMIZER_WHEELS, ERAS } from "../brand/brand";
+import { CUSTOMIZER_PAINTS, CUSTOMIZER_WHEELS } from "../brand/brand";
 import type { CarFleet } from "../scene/CarFleet";
 import type { Stage } from "../scene/Stage";
 import type { ScrollTimeline } from "../scroll/ScrollTimeline";
 
 /**
- * All user interactions: drag-rotate, door/hood hotspots + buttons, exploded
- * view with callouts, compare mode, and the 2026 customizer. State ownership:
- * CarFleet owns car state; this module owns UI state and mode transitions.
+ * All user interactions: door/hood buttons, exploded view with callouts, and
+ * the 2026 customizer. State ownership: CarFleet owns car state; this module
+ * owns UI state and mode transitions.
  */
 export function wireInteractions(stage: Stage, fleet: CarFleet, timeline: ScrollTimeline) {
-  const canvas = stage.renderer.domElement;
-  let compareOpen = false;
-
   let lastActive = -2;
   timeline.onChange((s) => {
     if (s.activeIndex !== lastActive) {
@@ -30,7 +27,7 @@ export function wireInteractions(stage: Stage, fleet: CarFleet, timeline: Scroll
     }
     // These are targets, not live values — Stage eases toward them each frame
     // so stepped wheel input reads as continuous motion.
-    stage.eraTarget = compareOpen ? stage.eraTarget : s.eraFloat;
+    stage.eraTarget = s.eraFloat;
     stage.handoffT = s.handoffT;
     fleet.setReveal(s.revealT);
     fleet.setIntro(s.introT);
@@ -39,36 +36,11 @@ export function wireInteractions(stage: Stage, fleet: CarFleet, timeline: Scroll
     // the page: the hero opens on it and scrolls down onto the first car, and
     // the finale rises back to it. Pull up and back until the whole plate
     // (center at z = -6) is in frame.
-    if (!compareOpen) {
-      const t = s.revealT;
-      stage.revealTarget = t;
-      stage.camOffsetTarget.set(t * -1.2, t * 13.5, t * 7.5);
-      stage.targetOffsetTarget.set(0, t * -0.55, t * -6.0);
-    }
+    const t = s.revealT;
+    stage.revealTarget = t;
+    stage.camOffsetTarget.set(t * -1.2, t * 13.5, t * 7.5);
+    stage.targetOffsetTarget.set(0, t * -0.55, t * -6.0);
   });
-
-  // ---------- drag rotate ----------
-  let dragging = false;
-  let lastX = 0;
-  let moved = 0;
-  canvas.style.touchAction = "pan-y";
-  canvas.addEventListener("pointerdown", (e) => {
-    dragging = true;
-    moved = 0;
-    lastX = e.clientX;
-    canvas.setPointerCapture(e.pointerId);
-  });
-  canvas.addEventListener("pointermove", (e) => {
-    if (!dragging) return;
-    const dx = e.clientX - lastX;
-    lastX = e.clientX;
-    moved += Math.abs(dx);
-    fleet.yaw += dx * 0.006;
-    fleet.yawVelocity = dx * 0.35;
-  });
-  const endDrag = () => (dragging = false);
-  canvas.addEventListener("pointerup", endDrag);
-  canvas.addEventListener("pointercancel", endDrag);
 
   // ---------- tool buttons ----------
   const buttons = document.querySelectorAll<HTMLButtonElement>(".tool-btn");
@@ -85,8 +57,6 @@ export function wireInteractions(stage: Stage, fleet: CarFleet, timeline: Scroll
         fleet.setExplode(era, on);
         btn.classList.toggle("is-on", on);
         setCallouts(on ? era : null);
-      } else if (action === "compare") {
-        openCompare(era);
       }
     });
   });
@@ -125,86 +95,26 @@ export function wireInteractions(stage: Stage, fleet: CarFleet, timeline: Scroll
     });
   });
 
-  // ---------- compare mode ----------
-  const panel = document.createElement("div");
-  panel.className = "compare-panel";
-  panel.innerHTML = `
-    <div class="compare-panel__bar">
-      <select id="cmp-a" aria-label="First generation"></select>
-      <span style="font-family:var(--mono);font-size:10px;opacity:.6">VS</span>
-      <select id="cmp-b" aria-label="Second generation"></select>
-      <button class="tool-btn" id="cmp-close">Close</button>
-    </div>
-    <div class="compare-card compare-card--a" id="cmp-card-a"></div>
-    <div class="compare-card compare-card--b" id="cmp-card-b"></div>
-  `;
-  document.body.appendChild(panel);
-  const selA = panel.querySelector<HTMLSelectElement>("#cmp-a")!;
-  const selB = panel.querySelector<HTMLSelectElement>("#cmp-b")!;
-  const options = ERAS.map((e, i) => `<option value="${i}">${e.year} ${e.model}</option>`).join("");
-  selA.innerHTML = options;
-  selB.innerHTML = options;
-
-  const card = (el: HTMLElement, i: number) => {
-    const e = ERAS[i];
-    el.innerHTML = `
-      <p class="year">${e.year}</p>
-      <h3>${e.model}</h3>
-      <ul>${e.specs.map((s) => `<li><span class="label">${s.label}</span><span>${s.value}</span></li>`).join("")}</ul>
-    `;
-  };
-
-  const applyCompare = () => {
-    const a = Number(selA.value);
-    const b = Number(selB.value);
-    fleet.setCompare([ERAS[a].key, ERAS[b].key]);
-    card(panel.querySelector("#cmp-card-a")!, a);
-    card(panel.querySelector("#cmp-card-b")!, b);
-    // frontal two-shot framing — the rig eases into it
-    stage.camOffsetTarget.set(-2.1, 0.45, 3.4);
-    stage.targetOffsetTarget.set(-0.6, 0, -0.4);
-  };
-
-  const openCompare = (fromEra: string) => {
-    compareOpen = true;
-    const i = ERAS.findIndex((e) => e.key === fromEra);
-    selA.value = String(i);
-    selB.value = String(i === ERAS.length - 1 ? 0 : i + 1);
-    panel.classList.add("is-open");
-    document.body.classList.add("is-locked");
-    applyCompare();
-  };
-
-  const closeCompare = () => {
-    compareOpen = false;
-    panel.classList.remove("is-open");
-    document.body.classList.remove("is-locked");
-    fleet.setCompare(null);
-    stage.camOffsetTarget.set(0, 0, 0);
-    stage.targetOffsetTarget.set(0, 0, 0);
-  };
-
-  selA.addEventListener("change", applyCompare);
-  selB.addEventListener("change", applyCompare);
-  panel.querySelector("#cmp-close")!.addEventListener("click", closeCompare);
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && compareOpen) closeCompare();
-  });
-
   // ---------- customizer (2026) ----------
   const paintRow = document.getElementById("paint-row");
   const wheelRow = document.getElementById("wheel-row");
-  if (paintRow && wheelRow) {
-    const swatch = (hex: string, name: string, active: boolean) => {
-      const b = document.createElement("button");
-      b.className = `swatch${active ? " is-active" : ""}`;
-      b.style.background = hex;
-      b.setAttribute("role", "radio");
-      b.setAttribute("aria-checked", String(active));
-      b.setAttribute("aria-label", name);
-      b.title = name;
-      return b;
-    };
+
+  const swatch = (hex: string, name: string, active: boolean) => {
+    const b = document.createElement("button");
+    b.className = `swatch${active ? " is-active" : ""}`;
+    b.style.background = hex;
+    b.setAttribute("role", "radio");
+    b.setAttribute("aria-checked", String(active));
+    b.setAttribute("aria-label", name);
+    b.title = name;
+    return b;
+  };
+
+  // Guarded separately on purpose. A single-mesh car has no addressable
+  // wheels, so its chapter renders no wheel row — and every era is single-mesh
+  // today. Requiring both rows here meant the paint swatches silently stopped
+  // rendering too, leaving an empty "Paint" heading on the 2026 chapter.
+  if (paintRow) {
     const nameEl = document.createElement("span");
     nameEl.className = "swatch-name";
     nameEl.textContent = CUSTOMIZER_PAINTS[0].name;
@@ -224,7 +134,9 @@ export function wireInteractions(stage: Stage, fleet: CarFleet, timeline: Scroll
       paintRow.appendChild(b);
     });
     paintRow.appendChild(nameEl);
+  }
 
+  if (wheelRow) {
     CUSTOMIZER_WHEELS.forEach((w, i) => {
       const b = swatch(w.hex, w.name, i === 0);
       b.addEventListener("click", () => {
